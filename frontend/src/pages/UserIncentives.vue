@@ -494,13 +494,26 @@
         </q-card-section>
 
         <q-card-section>
-          <div v-if="analyzeDialog.error" class="text-negative q-mb-md">
-            {{ analyzeDialog.error }}
-          </div>
-
           <div v-if="analyzeDialog.processing" class="text-center q-pa-md">
             <q-spinner color="primary" size="3em" />
-            <div class="text-body1 q-mt-sm">Analizzando l'incentivo...</div>
+            <div class="text-body1 q-mt-sm">
+              {{
+                analyzeDialog.currentStep === 'scraping'
+                  ? 'Scraping della pagina Bandi in corso...'
+                  : 'Analisi del testo in corso...'
+              }}
+            </div>
+          </div>
+
+          <div v-else-if="analyzeDialog.error" class="text-negative q-mb-md">
+            <div class="text-h6 q-mb-sm">
+              {{
+                analyzeDialog.currentStep === 'scraping'
+                  ? 'Scraping Bandi Fallito'
+                  : 'Analisi del Testo Fallita'
+              }}
+            </div>
+            {{ analyzeDialog.error }}
           </div>
 
           <div
@@ -596,7 +609,8 @@ export default {
         processing: false,
         error: null,
         analysis: null,
-        incentive: null
+        incentive: null,
+        currentStep: null
       },
       columns: [
         {
@@ -926,6 +940,7 @@ export default {
       this.analyzeDialog.error = null
       this.analyzeDialog.processing = false
       this.analyzeDialog.analysis = ''
+      this.analyzeDialog.currentStep = null
       const cachedAnalysis = localStorage.getItem(incentive.link)
       if (cachedAnalysis) {
         this.analyzeDialog.analysis = cachedAnalysis
@@ -937,6 +952,7 @@ export default {
     async analyzeIncentive() {
       this.analyzeDialog.processing = true
       this.analyzeDialog.error = null
+      this.analyzeDialog.currentStep = 'scraping'
       const cachedAnalysis = localStorage.getItem(
         this.analyzeDialog.incentive.link
       )
@@ -957,6 +973,7 @@ export default {
         }
 
         // Step 2: Analyze the scraped text
+        this.analyzeDialog.currentStep = 'analyzing'
         const analysisResponse = await api.post('scrapper/analyze-text', {
           text: scrapeResponse.data.text
         })
@@ -968,12 +985,13 @@ export default {
             analysisResponse.data.analysis
           )
         } else {
-          this.analyzeDialog.error = "Errore durante l'analisi dell'incentivo"
+          throw new Error("Errore durante l'analisi dell'incentivo")
         }
       } catch (error) {
         console.error('Error analyzing incentive:', error)
         this.analyzeDialog.error =
           error.response?.data?.error ||
+          error.message ||
           "Errore durante l'analisi dell'incentivo"
       } finally {
         this.analyzeDialog.processing = false

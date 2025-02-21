@@ -423,13 +423,26 @@
         </q-card-section>
 
         <q-card-section>
-          <div v-if="analyzeDialog.error" class="text-negative q-mb-md">
-            {{ analyzeDialog.error }}
-          </div>
-
           <div v-if="analyzeDialog.processing" class="text-center q-pa-md">
             <q-spinner color="primary" size="3em" />
-            <div class="text-body1 q-mt-sm">Analizzando l'incentivo...</div>
+            <div class="text-body1 q-mt-sm">
+              {{
+                analyzeDialog.currentStep === 'scraping'
+                  ? 'Scraping della pagina Bandi in corso...'
+                  : 'Analisi del testo in corso...'
+              }}
+            </div>
+          </div>
+
+          <div v-else-if="analyzeDialog.error" class="text-negative q-mb-md">
+            <div class="text-h6 q-mb-sm">
+              {{
+                analyzeDialog.currentStep === 'scraping'
+                  ? 'Scraping Bandi Fallito'
+                  : 'Analisi del Testo Fallita'
+              }}
+            </div>
+            {{ analyzeDialog.error }}
           </div>
 
           <div
@@ -581,7 +594,8 @@ export default {
         processing: false,
         incentive: null,
         analysis: null,
-        error: null
+        error: null,
+        currentStep: null
       },
       showFilters: false
     }
@@ -684,6 +698,19 @@ export default {
         const data = response.data.data || []
         const lastUpdated = response.data.last_updated || null
         const cached = response.data.cached || false
+        const jobStatus = response.data.job_status
+        const jobId = response.data.job_id
+
+        if (jobStatus === 'running' && jobId) {
+          this.$q.notify({
+            type: 'info',
+            message:
+              'Aggiornamento incentivi in corso. Attendere circa 1 minuto per il completamento.',
+            position: 'top',
+            timeout: 5000
+          })
+          this.pollJobStatus(jobId)
+        }
 
         this.$store.commit('setIncentives', {
           data,
@@ -704,6 +731,32 @@ export default {
       } finally {
         this.loading = false
       }
+    },
+
+    async pollJobStatus(jobId) {
+      const pollInterval = 20000 // Poll every 20 seconds
+      const maxAttempts = 15 // Maximum 5 minutes of polling (20s * 15 = 5min)
+
+      let attempts = 0
+      const poll = async () => {
+        try {
+          const response = await api.get('scrapper/incentives')
+          const jobStatus = response.data.job_status
+
+          if (jobStatus !== 'running' || attempts >= maxAttempts) {
+            // Job completed or max attempts reached, refresh data
+            await this.fetchIncentives()
+            return
+          }
+
+          attempts++
+          setTimeout(poll, pollInterval)
+        } catch (error) {
+          console.error('Error polling job status:', error)
+        }
+      }
+
+      poll()
     },
     formatDate(dateString) {
       if (!dateString) return 'N/A'
@@ -896,6 +949,7 @@ export default {
       this.analyzeDialog.error = null
       this.analyzeDialog.processing = false
       this.analyzeDialog.analysis = ''
+      this.analyzeDialog.currentStep = null
       const cachedAnalysis = localStorage.getItem(incentive.link)
       if (cachedAnalysis) {
         this.analyzeDialog.analysis = cachedAnalysis
@@ -907,6 +961,7 @@ export default {
     async analyzeIncentive() {
       this.analyzeDialog.processing = true
       this.analyzeDialog.error = null
+      this.analyzeDialog.currentStep = 'scraping'
       const cachedAnalysis = localStorage.getItem(
         this.analyzeDialog.incentive.link
       )
@@ -927,6 +982,7 @@ export default {
         }
 
         // Step 2: Analyze the scraped text
+        this.analyzeDialog.currentStep = 'analyzing'
         const analysisResponse = await api.post('scrapper/analyze-text', {
           text: scrapeResponse.data.text
         })
@@ -938,12 +994,13 @@ export default {
             analysisResponse.data.analysis
           )
         } else {
-          this.analyzeDialog.error = "Errore durante l'analisi dell'incentivo"
+          throw new Error("Errore durante l'analisi dell'incentivo")
         }
       } catch (error) {
         console.error('Error analyzing incentive:', error)
         this.analyzeDialog.error =
           error.response?.data?.error ||
+          error.message ||
           "Errore durante l'analisi dell'incentivo"
       } finally {
         this.analyzeDialog.processing = false
@@ -1159,7 +1216,7 @@ export default {
 
 .analysis-text :deep(table th) {
   background-color: #f6f8fa;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .analysis-text :deep(table tr:nth-child(2n)) {
