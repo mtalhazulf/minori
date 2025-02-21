@@ -1,0 +1,71 @@
+{
+  "name": "minori",
+  "version": "0.0.1",
+  "description": "A Quasar Framework app",
+  "productName": "Quasar App",
+  "author": "cetty <concetta.tosto@clemps.it>",
+  "private": true,
+  "scripts": {
+    "serve": "env-cmd -f .env quasar dev",
+    "serve:development": "env-cmd -f .env.dev quasar dev",
+    "build": "env-cmd -f .env.build quasar build",
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx,.json,.vue ./src *.js",
+    "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx,.vue ./src *.js"
+  },
+  "dependencies": {
+    "@fullcalendar/core": "^5.10.1",
+    "@fullcalendar/daygrid": "^5.10.1",
+    "@fullcalendar/interaction": "^5.10.1",
+    "@fullcalendar/list": "^5.10.1",
+    "@fullcalendar/resource-timegrid": "^5.10.1",
+    "@fullcalendar/vue3": "^5.10.1",
+    "@quasar/extras": "^1.0.0",
+    "@quasar/quasar-ui-qcalendar": "^4.0.0",
+    "axios": "^0.25.0",
+    "core-js": "^3.6.5",
+    "dotenv": "^16.0.0",
+    "idle-js": "^1.2.0",
+    "marked": "^15.0.7",
+    "moment": "^2.29.1",
+    "moment-timezone": "^0.5.43",
+    "process": "^0.11.10",
+    "quasar": "^2.14.2",
+    "vue": "^3.3.0",
+    "vue-router": "^4.0.0",
+    "vue-signature-pad": "^3.0.1",
+    "vuex": "^4.0.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.26.9",
+    "@babel/eslint-parser": "^7.13.14",
+    "@quasar/app-webpack": "^3.12.0",
+    "@quasar/quasar-app-extension-dotenv": "^1.1.0",
+    "@quasar/quasar-app-extension-qenv": "^1.1.0",
+    "@typescript-eslint/eslint-plugin": "^5.54.1",
+    "@typescript-eslint/parser": "^5.54.1",
+    "@vue/eslint-config-typescript": "^11.0.2",
+    "env-cmd": "^10.1.0",
+    "eslint": "^8.36.0",
+    "eslint-config-prettier": "^8.7.0",
+    "eslint-plugin-prettier-vue": "^4.2.0",
+    "eslint-plugin-vue": "^9.9.0",
+    "eslint-webpack-plugin": "^4.0.0",
+    "prettier": "^2.8.4",
+    "sass": "^1.32.12",
+    "typescript": "^5.7.3",
+    "webpack": "^5.98.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "packageManager": "yarn@3.5.1"
+}

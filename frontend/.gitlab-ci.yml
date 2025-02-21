@@ -1,0 +1,85 @@
+stages:
+  - test
+  - build
+  - deploy
+
+lint:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH'
+  stage: test
+  needs: []
+  image: node:18-alpine3.16
+  before_script:
+    - apk add --no-cache git
+  script:
+    - yarn --immutable
+    - yarn lint
+
+build:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+    - if: '$CI_COMMIT_TAG =~ /^v([0-9]+\.[0-9]+\.[0-9]+)$/'
+  stage: build
+  needs: []
+  image:
+    name: gcr.io/kaniko-project/executor:v1.17.0-debug
+    entrypoint: ['']
+  before_script:
+    - REGEX="^v([0-9]+\.[0-9]+\.[0-9]+)$"
+    - if echo "$CI_COMMIT_TAG" | grep -qE "$REGEX"; then export VERSION=$(echo "$CI_COMMIT_TAG" | sed -E "s/${REGEX}/\1/"); fi
+  script:
+    - sed -i "s|\"version\":[\ ]*\"[^\"]*\"|\"version\":\ \"${VERSION:-0.0.0+$CI_COMMIT_SHORT_SHA}\"|g" package.json
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor
+      --context $CI_PROJECT_DIR
+      --dockerfile $CI_PROJECT_DIR/Dockerfile
+      --build-arg GITLAB_RUNNER_JOB_TOKEN="$CI_JOB_TOKEN"
+      --build-arg GITLAB_RUNNER_BUILD="1"
+      --destination "$CI_REGISTRY_IMAGE:build-$CI_COMMIT_SHORT_SHA"
+      --destination "$CI_REGISTRY_IMAGE:latest"
+      $(if [ -n "$VERSION" ]; then
+      echo "--destination ${CI_REGISTRY_IMAGE}:${VERSION}";
+      else
+      echo "--destination ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}";
+      fi)
+
+deploy_development:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+  stage: deploy
+  needs:
+    - build
+  environment:
+    name: development
+  image:
+    name: bitnami/kubectl
+    entrypoint: ['']
+  script:
+    - kubectl --kubeconfig "$KUBECONFIG" -n $KUBE_NAMESPACE set image "deployment/$KUBE_DEPLOYMENT" "$KUBE_DEPLOYMENT_CONTAINER"="$CI_REGISTRY_IMAGE:build-$CI_COMMIT_SHORT_SHA"
+
+build_deploy_production_script:
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v([0-9]+\.[0-9]+\.[0-9]+)$/'
+  stage: deploy
+  needs:
+    - build
+  image: alpine:latest
+  before_script:
+    - apk add -U jsonnet
+  script:
+    - jsonnet -V enviroments="$DEPLOY_ENVIROMENTS" .gitlab-ci-deploy.yml.jsonnet > .gitlab-ci-deploy.yml
+  artifacts:
+    paths:
+      - .gitlab-ci-deploy.yml
+
+deploy_production_trigger:
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v([0-9]+\.[0-9]+\.[0-9]+)$/'
+  stage: deploy
+  needs:
+    - build_deploy_production_script
+  trigger:
+    include:
+      - artifact: .gitlab-ci-deploy.yml
+        job: build_deploy_production_script
+    strategy: depend

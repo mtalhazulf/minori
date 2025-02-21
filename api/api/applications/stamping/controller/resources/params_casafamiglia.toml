@@ -1,0 +1,41 @@
+[server]
+#indirizzo ip server api
+servercentrale="https://timbrature-demo.clemps.cloud/api/stamping/stamp"
+#porta server centrale
+porta="80"
+#timeout server api in millisecondi
+serverapitimeout=1000
+#Token per connessione
+tokenserver="jdjfjroej4893u93hfrehf39489hf"
+
+#Sezione messaggi da mostrare in uscita
+[messaggiingresso]
+numeromessaggi=1
+messaggio0="Buongiorno "
+
+
+#Sezione messaggi da mostrare in uscita
+[messaggiuscita]
+numeromessaggi=3
+messaggio0="Buonasera "
+messaggio1="Completare xxx "
+messaggio2="Non terminata attività yyy "
+arraymessaggi = [ "Buonasera ", "Completare xxx ", "Non terminata attività yyy " ]
+
+#Sezione messaggi errori ingresso
+[errori]
+nmesserringresso=3
+erringresso0=" errore in, procedere ad ingresso manuale"
+erringresso1=" non registrato"
+erringresso2=" doppia timbratura"
+#Sezione messaggi errori uscita
+nmesserruscita=3
+erruscita0=" errore out, procedere ad uscita manuale"
+erruscita1=" non ancora entrato"
+erruscita2=" non registrato"
+
+#Sezione controllo configurazone toml
+[configurazionetoml]
+serverposttoml="https://timbrature-demo.clemps.cloud/api/stamping/config/update"
+serverpostrisultatotoml="https://timbrature-demo.clemps.cloud/api/stamping/config/operation"
+intervallocontrollotoml="@every 5m"

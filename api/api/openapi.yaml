@@ -1,0 +1,4223 @@
+openapi: 3.0.3
+info:
+  title: Minori API
+  description: OAS of Minori API
+  version: 0.dev
+paths:
+  /auth/login:
+    post:
+      operationId: authLogin
+      tags:
+        - auth
+      description: Performs a login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                subscriber:
+                  type: string
+                usertype:
+                  type: string
+                username:
+                  type: string
+              required:
+                - username
+                - password
+                - subscriber
+      responses:
+        "200":
+          $ref: "#/components/responses/GenericResponse"
+      security: []
+  /auth/login/manual:
+    post:
+      operationId: authLoginManual.post
+      tags:
+        - auth
+      description: Performs a manual login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                subscriber:
+                  type: string
+                usertype:
+                  type: string
+                username:
+                  type: string
+                start_date:
+                  type: string
+                  x-stoplight:
+                    id: qn7otfu3ddm2g
+              required:
+                - password
+                - subscriber
+                - username
+      responses:
+        "200":
+          $ref: "#/components/responses/GenericResponse"
+      security: []
+  "/auth/logout/{arg}":
+    get:
+      tags:
+        - auth
+      description: Check if the operator can logout
+      operationId: authLogoutArg.get
+      parameters:
+        - schema:
+            type: string
+            enum:
+              - Mattina
+              - Pomeriggio
+              - Sera
+          name: arg
+          in: path
+          required: true
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+  /auth/logout:
+    post:
+      tags:
+        - auth
+      description: Performs a logout
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: string
+              required:
+                - user
+      responses:
+        "200":
+          $ref: "#/components/responses/GenericResponse"
+      operationId: authLogout.post
+  /auth/access-token:
+    post:
+      summary: Performs a login returning a JWT in the body
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                  format: password
+              required:
+                - username
+                - password
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                required:
+                  - token
+      operationId: authTokenAccess
+      security: []
+  /auth/refresh-token:
+    post:
+      summary: Returns a new JWT in the body
+      tags:
+        - auth
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                required:
+                  - token
+      operationId: authTokenRefresh
+  /auth/user:
+    post:
+      tags:
+        - auth
+      description: Permit to create a new user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                surname:
+                  type: string
+                username:
+                  type: string
+                email:
+                  type: string
+                role:
+                  type: string
+                fiscal_code:
+                  type: string
+                hourly_cost:
+                  type: string
+              required:
+                - name
+                - surname
+                - username
+                - email
+                - role
+                - fiscal_code
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: authUser.post
+  /auth/user/change-password:
+    put:
+      tags:
+        - auth
+      description: Change password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                new_password:
+                  type: string
+              required:
+                - password
+                - new_password
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: authUserChangePassword.put
+  "/auth/user/change-password/{id}":
+    put:
+      tags:
+        - auth
+      description: Change password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+              required:
+                - password
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: authUserChangePasswordArg.put
+      parameters:
+        - schema:
+            type: string
+          name: id
+          in: path
+          required: true
+  /auth/user/assign:
+    post:
+      tags:
+        - auth
+      description: Permit to assign badge id to operators
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                badge_assignment:
+                  type: array
+                  items:
+                    type: object
+              required:
+                - badge_assignment
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: authUserAssign.post
+  "/auth/user/edit/{arg}":
+    put:
+      tags:
+        - auth
+      description: Edit user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                surname:
+                  type: string
+                username:
+                  type: string
+                email:
+                  type: string
+                role:
+                  type: string
+                fiscal_code:
+                  type: string
+                hourly_cost:
+                  type: string
+              required:
+                - name
+                - surname
+                - username
+                - email
+                - role
+                - fiscal_code
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      parameters:
+        - schema:
+            type: string
+          name: arg
+          in: path
+          required: true
+      operationId: authUserEditArg.put
+  "/auth/user/{arg}":
+    get:
+      tags:
+        - auth
+      description: Get info about specific user
+      responses:
+        "200":
+          $ref: "#/components/responses/UserResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+      operationId: authUserArg.get
+      parameters:
+        - schema:
+            type: string
+          name: arg
+          in: path
+          required: true
+    put:
+      tags:
+        - auth
+      description: Delete user
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: authUserArg.put
+      parameters:
+        - schema:
+            type: string
+          name: arg
+          in: path
+          required: true
+  /auth/user/subscribers:
+    get:
+      tags:
+        - auth
+      description: Get all subscribers informations
+      operationId: authUserSubscribers.get
+      security: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+  /auth/user/operators:
+    get:
+      tags:
+        - auth
+      description: Get all operators informations
+      operationId: authUserOperators.get
+      parameters:
+        - schema:
+            type: string
+          name: status
+          in: query
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+  /auth/log:
+    get:
+      tags:
+        - auth
+      description: Get log informations
+      operationId: authLog.get
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Log"
+    post:
+      tags:
+        - auth
+      description: Create new log
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                color:
+                  type: string
+              required:
+                - name
+                - description
+      operationId: authLog.post
+  /auth/attendance/active:
+    get:
+      tags:
+        - auth
+      description: Get all active operators
+      operationId: authAttendanceActive.get
+      security: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+  /auth/attendance/status:
+    get:
+      tags:
+        - auth
+      description: Get all operators status
+      operationId: authAttendanceStatus.get
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+  /auth/attendance:
+    get:
+      tags:
+        - auth
+      description: Get attendances
+      operationId: authAttendance.get
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Attendance"
+    put:
+      tags:
+        - auth
+      description: Edit an already existing attendance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: string
+                status:
+                  type: string
+                start_date:
+                  type: string
+                  x-stoplight:
+                    id: dm02y4gvlmyed
+              required:
+                - user
+                - status
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: authAttendance.put
+    post:
+      tags:
+        - auth
+      description: Insert manual stamping (only admin can)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                type:
+                  type: string
+                status:
+                  type: string
+                start_date:
+                  type: string
+                end_date:
+                  type: string
+              required:
+                - userId
+                - type
+                - status
+                - start_date
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: authAttendance.post
+  "/auth/attendance/out/{arg}":
+    put:
+      tags:
+        - auth
+      description: Insert manual out stamping (only admin can)
+      parameters:
+        - schema:
+            type: string
+          name: arg
+          in: path
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                end_date:
+                  type: string
+              required:
+                - end_date
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: authAttendanceOutArg.put
+  "/auth/attendance/operator/{arg}":
+    get:
+      tags:
+        - auth
+      description: Get operator attendances
+      parameters:
+        - schema:
+            type: string
+          name: arg
+          in: path
+          required: true
+        - schema:
+            type: string
+          name: start_date
+          in: query
+          required: true
+        - schema:
+            type: string
+          name: end_date
+          in: query
+          required: true
+      operationId: authAttendanceOperatorArg.get
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Attendance"
+  "/events/{arg}":
+    delete:
+      tags:
+        - events
+      description: delete event
+      parameters:
+        - schema:
+            type: string
+          name: arg
+          in: path
+          required: true
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: eventsArg.delete
+  /events:
+    get:
+      tags:
+        - events
+      description: Get all events
+      operationId: events.get
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Task"
+    post:
+      tags:
+        - events
+      description: Add new event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                start:
+                  type: string
+                minor:
+                  type: string
+                  nullable: true
+                title:
+                  type: string
+                description:
+                  type: string
+              required:
+                - start
+                - title
+                - description
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: events.post
+  /events/expiring:
+    get:
+      tags:
+        - events
+      description: Get all events that expire in 15 days
+      operationId: eventsExpiring.get
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Task"
+  "/shifts/{shift_id}":
+    delete:
+      tags:
+        - shifts
+      description: delete shift
+      parameters:
+        - schema:
+            type: string
+          name: shift_id
+          in: path
+          required: true
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: shifts.delete
+    put:
+      tags:
+        - shifts
+      description: update shift
+      parameters:
+        - schema:
+            type: string
+          name: shift_id
+          in: path
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                operatorId:
+                  type: string
+                date:
+                  type: string
+                  format: date
+                startTime:
+                  type: string
+                  format: time
+                endTime:
+                  type: string
+                  format: time
+              required:
+                - operatorId
+                - date
+                - startTime
+                - endTime
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: shifts.put
+
+  /shifts:
+    get:
+      tags:
+        - shifts
+      description: Get all shifts
+      operationId: shifts.get
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Shift"
+    post:
+      tags:
+        - shifts
+      description: Add new shift
+      operationId: shifts.post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                operatorId:
+                  type: string
+                date:
+                  type: string
+                  format: date
+                startTime:
+                  type: string
+                  format: time
+                endTime:
+                  type: string
+                  format: time
+              required:
+                - operatorId
+                - date
+                - startTime
+                - endTime
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+  /extra-costs:
+    get:
+      tags:
+        - extra-costs
+      summary: Get extra costs for a specific month
+      operationId: shiftsExtraCosts.get
+      parameters:
+        - name: year
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: month
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Successful response
+    post:
+      tags:
+        - extra-costs
+      summary: Add a new extra cost
+      operationId: shiftsExtraCosts.post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                year:
+                  type: integer
+                month:
+                  type: integer
+                item_name:
+                  type: string
+                cost:
+                  type: number
+              required:
+                - year
+                - month
+                - item_name
+                - cost
+      responses:
+        "200":
+          description: Successful response
+    delete:
+      tags:
+        - extra-costs
+      summary: Delete a cost
+      operationId: shiftsExtraCosts.delete
+      responses:
+        "200":
+          description: OK
+      description: ""
+
+  /minors/minor:
+    get:
+      tags:
+        - minors
+      description: Get all minors
+      operationId: minorsMinor.get
+      parameters:
+        - schema:
+            type: string
+            default: ""
+          name: name
+          in: query
+        - schema:
+            type: string
+            default: ""
+          name: surname
+          in: query
+        - schema:
+            type: string
+            default: ""
+          name: fiscal_code
+          in: query
+        - schema:
+            type: string
+            default: ""
+          name: entry_date
+          in: query
+        - schema:
+            type: integer
+          name: page
+          in: query
+          required: true
+        - schema:
+            type: integer
+          name: limit
+          in: query
+          required: true
+        - schema:
+            type: string
+            default: ""
+          in: query
+          name: status
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Minor"
+    post:
+      tags:
+        - minors
+      description: Permit to insert a new minor
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                surname:
+                  type: string
+              required:
+                - name
+                - surname
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: minorsMinor.post
+
+  /minors/generate_summary:
+    post:
+      tags:
+        - minors
+      description: Generates a summary for a specific minor by ID using the OpenAI API.
+      operationId: minorsMinorGenerateSummary.post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                info_sheet:
+                  type: object
+                start_date:
+                  type: string
+                end_date:
+                  type: string
+      responses:
+        "200":
+          description: Summary generated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  summary:
+                    type: string
+                    description: The generated summary of the minor's details.
+        "400":
+          description: Bad request if the request body is not properly formed.
+        "404":
+          description: Not found if no minor exists with the given ID.
+        "500":
+          description: Server error if there is an issue generating the summary.
+
+  /minors/minor/all:
+    get:
+      tags:
+        - minors
+      description: Get all minors
+      operationId: minorsMinorAll.get
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Minor"
+  "/minors/minor/{arg}":
+    get:
+      tags:
+        - minors
+      description: Get minor
+      operationId: minorsMinorArg.get
+      parameters:
+        - schema:
+            type: string
+          name: arg
+          in: path
+          required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: "#/components/schemas/Minor"
+    put:
+      tags:
+        - auth
+      description: Edit minor
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: minorsMinorArg.put
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                surname:
+                  type: string
+                fiscal_code:
+                  type: string
+              required:
+                - name
+                - surname
+      parameters:
+        - schema:
+            type: string
+          name: arg
+          in: path
+          required: true
+    post:
+      tags:
+        - minors
+      description: Add minor info
+      operationId: minorsMinorArg.post
+      parameters:
+        - schema:
+            type: string
+          name: arg
+          in: path
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                community:
+                  type: object
+                minor:
+                  type: object
+                semestral_comunication:
+                  type: object
+              required:
+                - community
+                - minor
+                - semestral_comunication
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+  "/minors/minor/{id}/price":
+    get:
+      tags:
+        - minors
+      description: Get minor
+      operationId: minorsMinorIdPrice.get
+      parameters:
+        - schema:
+            type: string
+          name: id
+          in: path
+          required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: "#/components/schemas/Minor"
+    post:
+      tags:
+        - minors
+      description: Add price to minor info
+      operationId: minorsMinorIdPrice.post
+      parameters:
+        - schema:
+            type: string
+          name: id
+          in: path
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  type: number
+                timestamp:
+                  type: string
+              required:
+                - value
+                - timestamp
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+  "/adults/adult/{id}/price":
+    get:
+      tags:
+        - adults
+      description: Get adult price by adult-id
+      operationId: adultsAdultIdPrice.get
+      parameters:
+        - schema:
+            type: string
+          name: id
+          in: path
+          required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: "#/components/schemas/Minor"
+    post:
+      tags:
+        - adults
+      description: Add price to adult info
+      operationId: adultsAdultIdPrice.post
+      parameters:
+        - schema:
+            type: string
+          name: id
+          in: path
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  type: number
+                timestamp:
+                  type: string
+              required:
+                - value
+                - timestamp
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+  "/minors/minor/{id}/price/{timestamp}":
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: timestamp
+        in: path
+        required: true
+    delete:
+      summary: ""
+      operationId: minorsMinorIdPriceTimestamp.delete
+      responses:
+        "200":
+          description: OK
+      description: ""
+      tags:
+        - minors
+    patch:
+      summary: ""
+      operationId: minorsMinorIdPriceTimestamp.patch
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  value:
+                    type: number
+      tags:
+        - minors
+  "/adults/adult/{id}/price/{timestamp}":
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: timestamp
+        in: path
+        required: true
+    delete:
+      summary: ""
+      operationId: adultsAdultIdPriceTimestamp.delete
+      responses:
+        "200":
+          description: OK
+      description: ""
+      tags:
+        - adults
+    patch:
+      summary: ""
+      operationId: adultsAdultIdPriceTimestamp.patch
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  value:
+                    type: number
+      tags:
+        - adults
+  "/minors/minor/{id}/calculate":
+    get:
+      tags:
+        - minors
+      description: ""
+      operationId: minorsMinorIdCalculate.get
+      parameters:
+        - schema:
+            type: string
+          name: id
+          in: path
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: start_date
+        - schema:
+            type: string
+          in: query
+          name: end_date
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: "#/components/schemas/Minor"
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+  "/adults/adult/{id}/calculate":
+    get:
+      description: ""
+      operationId: adultsAdultIdCalculate.get
+      parameters:
+        - schema:
+            type: string
+          name: id
+          in: path
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: start_date
+        - schema:
+            type: string
+          in: query
+          name: end_date
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: "#/components/schemas/Minor"
+      tags:
+        - adults
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+  /minors/minor/price:
+    get:
+      tags:
+        - minors
+      description: Get all prices
+      operationId: minorsMinorPrice.get
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: "#/components/schemas/Minor"
+    parameters: []
+  /adults/adult/price:
+    get:
+      tags:
+        - adults
+      description: Get all prices
+      operationId: adultsAdultPrice.get
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: "#/components/schemas/Minor"
+    parameters: []
+  /minors/minor/present:
+    get:
+      tags:
+        - minors
+      description: Get minor
+      operationId: minorsMinorPresent.get
+      parameters:
+        - schema:
+            type: string
+          name: start_date
+          in: query
+          required: true
+        - schema:
+            type: string
+          name: end_date
+          in: query
+          required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: "#/components/schemas/Minor"
+  /minors/minor/present/prices:
+    get:
+      tags:
+        - minors
+      description: Get minor
+      operationId: minorsMinorPresentPrices.get
+      parameters:
+        - schema:
+            type: string
+          name: start_date
+          in: query
+          required: true
+        - schema:
+            type: string
+          name: end_date
+          in: query
+          required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: "#/components/schemas/Minor"
+    parameters: []
+  /adults/adult/present/prices:
+    get:
+      tags:
+        - minors
+      description: Get minor
+      operationId: adultsAdultPresentPrices.get
+      parameters:
+        - schema:
+            type: string
+          name: start_date
+          in: query
+          required: true
+        - schema:
+            type: string
+          name: end_date
+          in: query
+          required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: "#/components/schemas/Minor"
+    parameters: []
+  "/minors/minor/disable/{arg}":
+    put:
+      tags:
+        - auth
+      description: Disable minor
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: minorsMinorDisableArg.put
+      parameters:
+        - schema:
+            type: string
+          name: arg
+          in: path
+          required: true
+  /minors/attendance:
+    get:
+      tags:
+        - minors
+      description: Get minors attendances
+      operationId: minorsAttendanceArg.get
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MinorAttendance"
+      parameters:
+        - schema:
+            type: string
+          name: current_date
+          in: query
+          required: true
+    post:
+      tags:
+        - minors
+      description: Add minors attendances
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: minorsAttendance.post
+  "/minors/attendance/month/{arg}":
+    get:
+      tags:
+        - minors
+      description: Get minor attendances
+      operationId: minorsAttendanceMonthArg.get
+      parameters:
+        - schema:
+            type: string
+          name: arg
+          in: path
+          required: true
+        - schema:
+            type: string
+          name: start_date
+          in: query
+          required: true
+        - schema:
+            type: string
+          name: end_date
+          in: query
+          required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: "#/components/schemas/Attendance"
+  /adults/adult:
+    get:
+      tags:
+        - adults
+      description: Get all adults
+      operationId: adultsAdult.get
+      parameters:
+        - schema:
+            type: string
+            default: ""
+          name: name
+          in: query
+        - schema:
+            type: string
+            default: ""
+          name: surname
+          in: query
+        - schema:
+            type: string
+            default: ""
+          name: fiscal_code
+          in: query
+        - schema:
+            type: string
+            default: ""
+          name: entry_date
+          in: query
+        - schema:
+            type: integer
+          name: page
+          in: query
+          required: true
+        - schema:
+            type: integer
+          name: limit
+          in: query
+          required: true
+        - schema:
+            type: string
+            default: ""
+          in: query
+          name: status
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Adult"
+    post:
+      tags:
+        - adults
+      description: Permit to insert a new adult
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                surname:
+                  type: string
+              required:
+                - name
+                - surname
+            examples: {}
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: adultsAdult.post
+  /adults/adult/all:
+    get:
+      tags:
+        - adults
+      description: Get all adults
+      operationId: adultsAdultAll.get
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Adult"
+  "/adults/adult/{arg}":
+    get:
+      tags:
+        - adults
+      description: Get adult
+      operationId: adultsAdultArg.get
+      parameters:
+        - schema:
+            type: string
+          name: arg
+          in: path
+          required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: "#/components/schemas/Adult"
+    put:
+      tags:
+        - auth
+      description: Edit adult
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: adultsAdultArg.put
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                surname:
+                  type: string
+                fiscal_code:
+                  type: string
+              required:
+                - name
+                - surname
+      parameters:
+        - schema:
+            type: string
+          name: arg
+          in: path
+          required: true
+    post:
+      tags:
+        - adults
+      description: Add adult info
+      operationId: adultsAdultArg.post
+      parameters:
+        - schema:
+            type: string
+          name: arg
+          in: path
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                community:
+                  type: object
+                adult:
+                  type: object
+                semestral_comunication:
+                  type: object
+              required:
+                - community
+                - adult
+                - semestral_comunication
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+  /adults/adult/present:
+    get:
+      tags:
+        - adults
+      description: Get adult
+      operationId: adultsAdultPresent.get
+      parameters:
+        - schema:
+            type: string
+          name: start_date
+          in: query
+          required: true
+        - schema:
+            type: string
+          name: end_date
+          in: query
+          required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: "#/components/schemas/Adult"
+  "/adults/adult/disable/{arg}":
+    put:
+      tags:
+        - auth
+      description: Disable adult
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: adultsAdultDisableArg.put
+      parameters:
+        - schema:
+            type: string
+          name: arg
+          in: path
+          required: true
+  /adults/attendance:
+    get:
+      tags:
+        - adults
+      description: Get adults attendances
+      operationId: adultsAttendanceArg.get
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AdultAttendance"
+      parameters:
+        - schema:
+            type: string
+          name: current_date
+          in: query
+          required: true
+    post:
+      tags:
+        - adults
+      description: Add adults attendances
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: adultsAttendance.post
+  "/adults/attendance/month/{arg}":
+    get:
+      tags:
+        - adults
+      description: Get adult attendances
+      operationId: adultsAttendanceMonthArg.get
+      parameters:
+        - schema:
+            type: string
+          name: arg
+          in: path
+          required: true
+        - schema:
+            type: string
+          name: start_date
+          in: query
+          required: true
+        - schema:
+            type: string
+          name: end_date
+          in: query
+          required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: "#/components/schemas/Attendance"
+  /settings/setting/iva:
+    post:
+      tags:
+        - settings
+      description: Add iva
+      operationId: settingsSettingIva.post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  type: number
+                timestamp:
+                  type: string
+              required:
+                - value
+                - timestamp
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      summary: Add Iva
+    parameters: []
+    get:
+      summary: Get Iva
+      operationId: settingsSettingIva.get
+      responses:
+        "200":
+          description: OK
+      tags:
+        - settings
+      description: get Iva
+  /settings/setting/user/role:
+    post:
+      tags:
+        - settings
+      description: Add role
+      operationId: settingsSettingUserRoles.post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                label:
+                  type: string
+                description:
+                  type: string
+                average_hour_cost:
+                  type: string
+              required:
+                - name
+                - label
+                - description
+                - average_hour_cost
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+  "/settings/setting/user/role/{arg}":
+    put:
+      tags:
+        - settings
+      description: Edit role
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: settingsSettingUserRoleArg.put
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                label:
+                  type: string
+                description:
+                  type: string
+                average_hour_cost:
+                  type: string
+              required:
+                - name
+                - label
+                - description
+                - average_hour_cost
+      parameters:
+        - schema:
+            type: string
+          name: arg
+          in: path
+          required: true
+    delete:
+      tags:
+        - settings
+      description: Delete role
+      parameters:
+        - schema:
+            type: string
+          name: arg
+          in: path
+          required: true
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: settingsSettingUserRoleArg.delete
+  "/settings/setting/user/{arg}":
+    get:
+      tags:
+        - settings
+      description: Get operators settings
+      operationId: settingsSettingUser.get
+      parameters:
+        - schema:
+            type: string
+          name: arg
+          in: path
+          required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: "#/components/schemas/Settings"
+  "/settings/setting/task/{cid}":
+    post:
+      summary: ""
+      operationId: settingsSettingTaskCid.post
+      responses:
+        "200":
+          description: OK
+      description: ""
+      tags:
+        - settings
+    parameters:
+      - schema:
+          type: string
+          format: object-id
+        name: cid
+        in: path
+        required: true
+    delete:
+      summary: ""
+      operationId: settingsSettingTaskCid.delete
+      responses:
+        "200":
+          description: OK
+      tags:
+        - settings
+    patch:
+      summary: ""
+      operationId: settingsSettingTaskCid.patch
+      responses:
+        "200":
+          description: OK
+      tags:
+        - settings
+      description: ""
+  "/settings/setting/task/{cid}/{mid}":
+    parameters:
+      - schema:
+          type: string
+          format: object-id
+        name: cid
+        in: path
+        required: true
+      - schema:
+          type: string
+          format: object-id
+        name: mid
+        in: path
+        required: true
+    delete:
+      summary: ""
+      operationId: settingsSettingTaskCidMid.delete
+      responses:
+        "200":
+          description: OK
+      tags:
+        - settings
+      description: ""
+    patch:
+      summary: ""
+      operationId: settingsSettingTaskCidMid.patch
+      responses:
+        "200":
+          description: OK
+      tags:
+        - settings
+  /settings/setting/task:
+    get:
+      tags:
+        - settings
+      description: Get tasks settings
+      operationId: settingsSettingTask.get
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: "#/components/schemas/Settings"
+    post:
+      summary: ""
+      operationId: settingsSettingTask.post
+      responses:
+        "200":
+          description: OK
+      description: ""
+      tags:
+        - settings
+    parameters: []
+  /stamping/stamp/in/:
+    post:
+      tags:
+        - stamping
+      description: Check if operator can stamp the ingress and stamp
+      operationId: stampingStampIn
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                attendance:
+                  type: string
+                macaddress:
+                  type: string
+              required:
+                - id
+                - attendance
+      security: []
+      responses:
+        "200":
+          $ref: "#/components/responses/StampingResponse"
+  /stamping/stamp/out/:
+    post:
+      tags:
+        - stamping
+      description: Check if operator can stamp the exit and stamp
+      operationId: stampingStampOut
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                attendance:
+                  type: string
+                macaddress:
+                  type: string
+              required:
+                - id
+                - attendance
+      security: []
+      responses:
+        "200":
+          $ref: "#/components/responses/StampingResponse"
+  /stamping/config/operation:
+    post:
+      tags:
+        - stamping
+      responses:
+        "200":
+          $ref: "#/components/responses/StampingResponse"
+      operationId: stampingConfigOperation.post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: integer
+                revisione:
+                  type: string
+                revisionesw:
+                  type: string
+                errore:
+                  type: string
+                cliente:
+                  type: string
+              required:
+                - status
+                - revisione
+                - cliente
+      security: []
+  "/tasks/task/taken/{days_or_date}":
+    get:
+      tags:
+        - tasks
+      description: Get all taken tasks
+      operationId: tasksTaskTaken.get
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Task"
+    parameters:
+      - schema:
+          type: string
+        name: days_or_date
+        in: path
+        required: true
+  /tasks/task/summary:
+    get:
+      tags:
+        - tasks
+      description: Check all taken tasks
+      operationId: tasksTaskSummary.get
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                  taken:
+                    type: integer
+                required:
+                  - total
+                  - taken
+  /tasks/task/charge:
+    post:
+      tags:
+        - tasks
+      description: Take charge of tasks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                charge:
+                  type: array
+                  items:
+                    type: string
+                discharge:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: tasksTaskCharge.post
+  "/tasks/task/{arg}":
+    delete:
+      tags:
+        - tasks
+      description: Delete task
+      parameters:
+        - schema:
+            type: string
+          name: arg
+          in: path
+          required: true
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: tasksTaskArg.delete
+    put:
+      summary: ""
+      operationId: tasksTaskArg.put
+      responses:
+        "200":
+          description: OK
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                start:
+                  type: string
+                isGeneral:
+                  type: string
+              required:
+                - isGeneral
+      description: ""
+  /tasks/task:
+    get:
+      tags:
+        - tasks
+      description: Get all tasks
+      operationId: tasksTask.get
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Task"
+    post:
+      tags:
+        - tasks
+      description: Add new task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                start:
+                  type: string
+                minor:
+                  type: string
+                  nullable: true
+                resource:
+                  type: object
+                title:
+                  type: string
+                description:
+                  type: string
+              required:
+                - start
+                - title
+                - description
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: tasksTask.post
+    put:
+      tags:
+        - tasks
+      description: Edit task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                task:
+                  type: string
+                isAccepted:
+                  type: boolean
+                postponed:
+                  type: boolean
+              required:
+                - task
+                - isAccepted
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: tasksTask.put
+  /tasks/task/notes:
+    put:
+      tags:
+        - tasks
+      description: Add notes to task in logbook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                task:
+                  type: string
+                notes:
+                  type: string
+              required:
+                - task
+                - notes
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: tasksTaskNotes.put
+  /tasks/notebook/reset:
+    get:
+      tags:
+        - tasks
+      description: Reset notebookTasks
+      operationId: tasksNotebookReset.get
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NotebookTask"
+    parameters: []
+  "/tasks/notebook/taken/{days_or_date}":
+    get:
+      tags:
+        - tasks
+      description: Get all taken notebook tasks
+      operationId: tasksNotebookTaken.get
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NotebookTask"
+    parameters:
+      - schema:
+          type: string
+        name: days_or_date
+        in: path
+        required: true
+  "/tasks/notebook/summary/{shift}/{dayofweek}":
+    get:
+      tags:
+        - tasks
+      description: Check all taken and done tasks
+      operationId: tasksNotebookSummaryArg.get
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                  taken:
+                    type: integer
+                  done:
+                    type: integer
+                required:
+                  - total
+                  - taken
+                  - done
+    parameters:
+      - schema:
+          type: string
+        name: shift
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: dayofweek
+        in: path
+        required: true
+  "/tasks/notebook/type/{arg}":
+    get:
+      tags:
+        - tasks
+      description: Check all tasks by title
+      operationId: tasksNotebookTypeArg.get
+      parameters:
+        - schema:
+            type: string
+          name: arg
+          in: path
+          required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                  taken:
+                    type: integer
+                  done:
+                    type: integer
+                required:
+                  - total
+                  - taken
+                  - done
+    parameters:
+      - schema:
+          type: string
+        name: arg
+        in: path
+        required: true
+  "/tasks/notebook/{shift}/{dayofweek}/{data}":
+    get:
+      tags:
+        - tasks
+      description: Get all notebook tasks of a specific shift
+      operationId: tasksNotebookArg.get
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NotebookTask"
+    post:
+      tags:
+        - tasks
+      description: Take charge of notebook tasks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                charge:
+                  type: array
+                  items:
+                    type: string
+                discharge:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: tasksNotebookArg.post
+    parameters:
+      - schema:
+          type: string
+        name: shift
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: dayofweek
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: data
+        in: path
+        required: true
+  "/tasks/notebook/{shift}/{dayofweek}/{arg}":
+    parameters:
+      - schema:
+          type: string
+        name: shift
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: dayofweek
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: arg
+        in: path
+        required: true
+    delete:
+      summary: ""
+      operationId: tasksNotebookArg.delete
+      responses:
+        "200":
+          description: OK
+      tags:
+        - tasks
+  /tasks/notebook:
+    post:
+      tags:
+        - tasks
+      description: Add new notebook tasks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                periods:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      dayofweek:
+                        type: string
+                      shift:
+                        type: string
+                    required:
+                      - dayofweek
+                      - shift
+              required:
+                - title
+                - description
+                - periods
+            examples:
+              example-1:
+                value:
+                  title: string
+                  description: string
+                  periods:
+                    - dayofweek: string
+                      shift: string
+              example-2:
+                value:
+                  title: string
+                  description: string
+                  periods:
+                    - dayofweek: string
+                      shift: string
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: tasksNotebook.post
+    put:
+      tags:
+        - tasks
+      description: Edit notebook task
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                task:
+                  type: string
+                isAccepted:
+                  type: boolean
+                date:
+                  type: string
+              required:
+                - task
+                - isAccepted
+                - date
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: tasksNotebook.put
+  /tasks/notebook/notes:
+    put:
+      tags:
+        - tasks
+      description: Add note to notebook task logbook
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                task:
+                  type: string
+                notes:
+                  type: string
+              required:
+                - task
+                - notes
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: tasksNotebookNotes.put
+  /tasks/medication:
+    get:
+      tags:
+        - tasks
+      description: Get all medications
+      operationId: tasksMedication.get
+      parameters:
+        - schema:
+            type: string
+            default: ""
+          name: name
+          in: query
+        - schema:
+            type: integer
+            default: 0
+          name: amount
+          in: query
+        - schema:
+            type: string
+            default: ""
+          name: operator
+          in: query
+        - schema:
+            type: string
+            default: ""
+          name: expiration_date
+          in: query
+        - schema:
+            type: string
+            default: ""
+          name: disposed_of
+          in: query
+        - schema:
+            type: integer
+          name: page
+          in: query
+          required: true
+        - schema:
+            type: integer
+          name: limit
+          in: query
+          required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Medication"
+    post:
+      tags:
+        - tasks
+      description: Add new medication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                expiration_date:
+                  type: string
+                lotto:
+                  type: string
+                amount:
+                  type: integer
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: tasksMedication.post
+  "/tasks/medication/{arg}":
+    delete:
+      tags:
+        - tasks
+      description: Delete medication
+      parameters:
+        - schema:
+            type: string
+          name: arg
+          in: path
+          required: true
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: tasksMedicationArg.delete
+    put:
+      tags:
+        - tasks
+      description: Edit medication
+      parameters:
+        - schema:
+            type: string
+          name: arg
+          in: path
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                expiration_date:
+                  type: string
+                lotto:
+                  type: string
+                amount:
+                  type: integer
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: tasksMedicationArg.put
+  /tasks/calls:
+    get:
+      tags:
+        - tasks
+      description: Get all call logs
+      operationId: tasksCallLogs
+      parameters:
+        - schema:
+            type: string
+            default: ""
+          name: minor
+          in: query
+        - schema:
+            type: string
+            default: ""
+          name: operator
+          in: query
+        - schema:
+            type: string
+            default: ""
+          name: date
+          in: query
+        - schema: #Updated: Added this to work with the AI module of summarization. This will be passed a date and the api will return all the calls after that date.
+            type: string
+            default: ""
+          name: startDate
+          in: query
+        - schema:
+            type: integer
+          name: page
+          in: query
+          required: true
+        - schema:
+            type: integer
+          name: limit
+          in: query
+          required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CallLog"
+    post:
+      tags:
+        - tasks
+      description: Add new call log
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date:
+                  type: string
+                phone_call_issuer:
+                  type: string
+                minors:
+                  type: array
+                notes:
+                  type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: tasksCallLogs.post
+  "/tasks/calls/{arg}":
+    delete:
+      tags:
+        - tasks
+      description: Delete call log
+      parameters:
+        - schema:
+            type: string
+          name: arg
+          in: path
+          required: true
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: tasksCallLogsArg.delete
+    put:
+      tags:
+        - tasks
+      description: Edit call log
+      parameters:
+        - schema:
+            type: string
+          name: arg
+          in: path
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date:
+                  type: string
+                phone_call_issuer:
+                  type: string
+                minors:
+                  type: array
+                notes:
+                  type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: tasksCallLogsArg.put
+  /tasks/logbook:
+    put:
+      tags:
+        - tasks
+      description: Edit call log
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                operator:
+                  type: string
+                note:
+                  type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+      operationId: tasksLogbook.put
+  "/tasks/logbook/{days_or_date}":
+    get:
+      tags:
+        - tasks
+      description: Get logbook
+      operationId: tasksLogbook.get
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Logbook"
+    parameters:
+      - schema:
+          type: string
+        name: days_or_date
+        in: path
+        required: true
+  /exports/export/accounting:
+    post:
+      summary: ""
+      operationId: exportsExportAccounting.post
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  imponibile:
+                    type: array
+                    items:
+                      type: number
+                  iva:
+                    type: array
+                    items:
+                      type: number
+                  total:
+                    type: array
+                    items:
+                      type: number
+                  valore_iva:
+                    type: number
+                    minimum: 0
+                    exclusiveMinimum: true
+                required:
+                  - imponibile
+                  - iva
+                  - total
+                  - valore_iva
+      tags:
+        - export
+    parameters: []
+  /exports/export/medication:
+    get:
+      tags:
+        - export
+      description: Medication export
+      operationId: exportsExportMedication.get
+      parameters:
+        - schema:
+            type: string
+          name: expired
+          in: query
+        - schema:
+            type: string
+          name: disposed_of
+          in: query
+      responses:
+        "200":
+          $ref: "#/components/responses/ExportResponse"
+  /exports/export/operators:
+    get:
+      tags:
+        - export
+      description: Attendance operator export
+      operationId: exportsExportOperators.get
+      parameters:
+        - schema:
+            type: string
+          name: start_date
+          in: query
+        - schema:
+            type: string
+          name: end_date
+          in: query
+        - schema:
+            type: string
+          name: operator
+          in: query
+      responses:
+        "200":
+          $ref: "#/components/responses/ExportResponse"
+  /exports/export/minors:
+    get:
+      tags:
+        - export
+      description: Attendance minor export
+      operationId: exportsExportMinors.get
+      parameters:
+        - schema:
+            type: string
+          name: date
+          in: query
+      responses:
+        "200":
+          $ref: "#/components/responses/ExportResponse"
+  "/exports/export/minor/{arg}":
+    get:
+      tags:
+        - export
+      description: Attendance minor export
+      parameters:
+        - schema:
+            type: string
+          name: arg
+          in: path
+          required: true
+      operationId: exportsExportMinorArg.get
+      responses:
+        "200":
+          $ref: "#/components/responses/ExportResponse"
+  "/exports/export/minor/ai/{minor_id}":
+    get:
+      tags:
+        - export
+      description: Attendance minor export
+      parameters:
+        - schema:
+            type: string
+          name: minor_id
+          in: path
+          required: true
+      operationId: exportsExportMinorAI.get
+      responses:
+        "200":
+          $ref: "#/components/responses/ExportResponse"
+  /exports/export/adults:
+    get:
+      tags:
+        - export
+      description: Attendance adult export
+      operationId: exportsExportAdults.get
+      parameters:
+        - schema:
+            type: string
+          name: date
+          in: query
+      responses:
+        "200":
+          $ref: "#/components/responses/ExportResponse"
+    parameters: []
+  "/exports/export/adult/{arg}":
+    get:
+      tags:
+        - export
+      description: Attendance adult export
+      parameters:
+        - schema:
+            type: string
+          name: arg
+          in: path
+          required: true
+      operationId: exportsExportAdultArg.get
+      responses:
+        "200":
+          $ref: "#/components/responses/ExportResponse"
+    parameters:
+      - schema:
+          type: string
+        name: arg
+        in: path
+        required: true
+  /exports/export/call-logs:
+    get:
+      tags:
+        - export
+      description: Call logs export
+      operationId: exportsExportCallLogs.get
+      parameters:
+        - schema:
+            type: string
+          name: start_date
+          in: query
+        - schema:
+            type: string
+          name: end_date
+          in: query
+        - schema:
+            type: string
+          name: operator
+          in: query
+        - schema:
+            type: string
+          name: minor
+          in: query
+      responses:
+        "200":
+          $ref: "#/components/responses/ExportResponse"
+  /exports/export/hccp:
+    get:
+      tags:
+        - export
+      description: HCCP modules export
+      operationId: exportsExportHccpArg.get
+      parameters:
+        - schema:
+            type: string
+            default: ""
+          name: type
+          in: query
+        - schema:
+            type: string
+            default: ""
+          name: date
+          in: query
+      responses:
+        "200":
+          $ref: "#/components/responses/ExportResponse"
+  /exports/export/logbook:
+    get:
+      tags:
+        - export
+      description: Logbook export
+      operationId: exportsExportLogbook.get
+      parameters:
+        - schema:
+            type: string
+            default: ""
+          name: date
+          in: query
+        - schema:
+            type: string
+          name: operator
+          in: query
+      responses:
+        "200":
+          $ref: "#/components/responses/ExportResponse"
+  /exports/archive/minor:
+    get:
+      tags:
+        - export
+      description: Get all archived minor sheets
+      operationId: exportsArchiveMinor.get
+      responses:
+        "200":
+          $ref: "#/components/responses/ExportResponse"
+    parameters: []
+  /exports/archive/adult:
+    get:
+      tags:
+        - export
+      description: Get all archived adult sheets
+      operationId: exportsArchiveAdult.get
+      responses:
+        "200":
+          $ref: "#/components/responses/ExportResponse"
+    parameters: []
+  "/exports/archive/minor/{arg}":
+    get:
+      tags:
+        - export
+      description: Attendance minor archive
+      parameters:
+        - schema:
+            type: string
+          name: arg
+          in: path
+          required: true
+      operationId: exportsArchiveMinorArg.get
+      responses:
+        "200":
+          $ref: "#/components/responses/ExportResponse"
+    parameters:
+      - schema:
+          type: string
+        name: arg
+        in: path
+        required: true
+    post:
+      summary: ""
+      operationId: exportsArchiveMinorArg.post
+      responses:
+        "200":
+          description: OK
+      tags:
+        - export
+  "/exports/archive/adult/{arg}":
+    get:
+      tags:
+        - export
+      description: Attendance adult archive
+      parameters:
+        - schema:
+            type: string
+          name: arg
+          in: path
+          required: true
+      operationId: exportsArchiveAdultArg.get
+      responses:
+        "200":
+          $ref: "#/components/responses/ExportResponse"
+    parameters:
+      - schema:
+          type: string
+        name: arg
+        in: path
+        required: true
+    post:
+      summary: ""
+      operationId: exportsArchiveAdultArg.post
+      responses:
+        "200":
+          description: OK
+      tags:
+        - export
+  /rooms/room:
+    get:
+      description: Get all rooms
+      operationId: roomsRoom.get
+      parameters:
+        - schema:
+            type: integer
+          name: page
+          in: query
+        - schema:
+            type: integer
+          name: limit
+          in: query
+        - schema:
+            type: string
+          in: query
+          name: room_name
+        - schema:
+            type: string
+          in: query
+          name: surname
+        - schema:
+            type: integer
+          in: query
+          name: available_seats
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RoomGet"
+      tags:
+        - rooms
+      summary: Get all rooms
+    post:
+      description: "Add new room "
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoomPost"
+      responses:
+        "200":
+          $ref: "#/components/responses/SuccessResponse"
+        "201":
+          $ref: "#/components/responses/SuccessResponse"
+        "500":
+          description: Internal Server Error
+      operationId: roomsRoom.post
+      summary: Add a new room
+      tags:
+        - rooms
+    parameters: []
+  "/rooms/room/{id}":
+    get:
+      tags:
+        - rooms
+      description: Get room by id
+      operationId: roomsRoomId.get
+      parameters: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoomGet"
+      summary: Get room by id
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    patch:
+      summary: Modify room by id
+      operationId: roomsRoomId.patch
+      responses:
+        "200":
+          description: OK
+      description: modify existing room by id
+      tags:
+        - rooms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoomPatch"
+    delete:
+      summary: Delete room by id
+      operationId: roomsRoomId.delete
+      responses:
+        "200":
+          description: OK
+      description: Delete room by id
+      tags:
+        - rooms
+
+  /tasks/operators/reports:
+    get:
+      summary: Fetch reports for an operator
+      operationId: tasksReports.get
+      tags:
+        - reports
+      parameters: []
+      responses:
+        "200":
+          description: Successful response
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  "/reports/{report_id}":
+    get:
+      summary: View a specific report
+      operationId: tasksReport.get
+      tags:
+        - reports
+      parameters:
+        - name: report_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  date:
+                    type: string
+                    format: date
+                  content:
+                    type: string
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  "/operators/{operator_id}/generate-report/{start_date}/{end_date}":
+    get:
+      summary: Generate a new AI report for an operator
+      operationId: tasksOperatorReport.get
+      tags:
+        - reports
+      parameters:
+        - name: operator_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: start_date
+          in: path
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: path
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: Report generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /scrapper/analyze:
+    post:
+      operationId: scrapper_analyze
+      tags:
+        - scrapper
+      description: Scrapes webpage text and analyzes it using OpenAI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  description: URL of the webpage to analyze
+              required:
+                - url
+      responses:
+        "200":
+          description: Successful analysis
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  analysis:
+                    type: string
+        "500":
+          description: Error during analysis
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+
+  /scrapper/analyze-text:
+    post:
+      operationId: scrapper_analyze_text
+      tags:
+        - scrapper
+      description: Analyzes provided text using OpenAI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                  description: Text to analyze
+              required:
+                - text
+      responses:
+        "200":
+          description: Successful analysis
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  analysis:
+                    type: string
+        "400":
+          description: Bad Request - Missing text
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+        "500":
+          description: Error during analysis
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+
+  /scrapper/incentives:
+    get:
+      operationId: scrapperIncentivesGet
+      tags:
+        - scrapper
+      description: Get all incentives
+      parameters:
+        - in: query
+          name: force_refresh
+          schema:
+            type: boolean
+            default: false
+          description: Force refresh of incentives data
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/IncentiveCache"
+        "500":
+          description: Internal Server Error
+    post:
+      operationId: scrapperIncentiveCreateV2
+      tags:
+        - scrapper
+      description: Create a new incentive
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IncentiveCache"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    $ref: "#/components/schemas/IncentiveCache"
+        "400":
+          description: Bad Request - Invalid data format
+        "409":
+          description: Conflict - Incentive already exists
+        "500":
+          description: Internal Server Error
+
+  "/scrapper/incentives/{incentive_id}":
+    parameters:
+      - name: incentive_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: ID of the incentive
+    get:
+      operationId: scrapperIncentiveGet
+      tags:
+        - scrapper
+      description: Get a single incentive by ID
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: "#/components/schemas/IncentiveCache"
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+    put:
+      operationId: scrapperIncentiveUpdate
+      tags:
+        - scrapper
+      description: Update an existing incentive
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IncentiveCache"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        "400":
+          description: Bad Request - Invalid data format
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+    delete:
+      operationId: scrapperIncentiveDelete
+      tags:
+        - scrapper
+      description: Delete an incentive
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+  /scrapper/incentives/all:
+    get:
+      operationId: scrapperIncentivesAll
+      tags:
+        - scrapper
+      description: Get all incentives for the current user
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/IncentiveCache"
+                  total:
+                    type: integer
+                  user:
+                    type: object
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      x-bearerInfoFunc: api.middleware.authn.authn_bearer
+    CookieAuth:
+      name: access_token_cookie
+      type: apiKey
+      in: cookie
+      x-apikeyInfoFunc: api.middleware.authn.authn_cookie
+  schemas:
+    Shift:
+      type: object
+      description: Describe an operator shift object
+      properties:
+        _id:
+          type: object
+          $ref: "#/components/schemas/ObjectId"
+        operatorId:
+          type: object
+          $ref: "#/components/schemas/ObjectId"
+        date:
+          type: string
+        start_time:
+          type: string
+        end_time:
+          type: string
+      required:
+        - _id
+        - date
+        - operatorId
+        - start_time
+        - end_time
+    Session:
+      description: Describe a user session.py. It is also the JWT body
+      type: object
+      x-examples:
+        example-1:
+          id: casafamiglia-6232491af13c15e7e1d7f7b4
+          uid: 6232491af13c15e7e1d7f7b4
+          username: casafamiglia
+          usertype: user
+          subscriber: casafamiglia
+          subscriber_id: 6232491af13c15e7e1d7f7b4
+          authorizations:
+            - authorization: ""
+              wildcard: true
+              id: 6232491af13c15e7e1d7f7b4
+          groups: []
+          session_time: "2021-09-07T17:02:39.493911"
+      properties:
+        id:
+          type: string
+        uid:
+          type: string
+          pattern: "[a-z0-9]{24}"
+        username:
+          type: string
+        usertype:
+          type: string
+        subscriber:
+          type: string
+        subscriber_id:
+          type: string
+          pattern: "[a-z0-9]{24}"
+        authorizations:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/Authorization"
+        groups:
+          type: array
+          items:
+            type: object
+        session_time:
+          type: string
+          minLength: 1
+        name:
+          type: string
+        surname:
+          type: string
+        companyName:
+          type: string
+      required:
+        - id
+        - uid
+        - username
+        - usertype
+        - subscriber
+        - subscriber_id
+        - authorizations
+        - groups
+        - session_time
+    Authorization:
+      description: ""
+      type: object
+      x-examples:
+        example-1:
+          authorization: ""
+          wildcard: true
+          id: 6232491af13c15e7e1d7f7b4
+      properties:
+        authorization:
+          type: string
+        wildcard:
+          type: boolean
+        id:
+          type: string
+          pattern: "[a-z0-9]{24}"
+      required:
+        - authorization
+        - wildcard
+        - id
+      title: ""
+    User:
+      type: object
+      description: Describe a user object
+      properties:
+        _id:
+          type: object
+          $ref: "#/components/schemas/ObjectId"
+        username:
+          type: string
+        type:
+          type: string
+        status:
+          type: string
+        homepage:
+          type: string
+        email:
+          type: string
+        companyName:
+          type: string
+        badgeId:
+          type: string
+      required:
+        - _id
+        - username
+        - type
+        - status
+        - homepage
+        - email
+        - companyName
+    Attendance:
+      type: object
+      description: Describe an user attendance object
+      properties:
+        _id:
+          type: object
+          $ref: "#/components/schemas/ObjectId"
+        date:
+          type: string
+        userId:
+          type: object
+          $ref: "#/components/schemas/ObjectId"
+        job:
+          type: string
+        start_date:
+          type: string
+        start_sign:
+          type: string
+        end_date:
+          type: string
+        end_sign:
+          type: string
+        type:
+          type: object
+      required:
+        - _id
+        - date
+        - userId
+        - job
+        - start_date
+        - start_sign
+        - end_date
+        - end_sign
+        - type
+    Log:
+      type: object
+      description: Describe a log object
+      properties:
+        _id:
+          type: object
+          $ref: "#/components/schemas/ObjectId"
+        operator:
+          type: string
+        name:
+          type: string
+        hour:
+          type: string
+        description:
+          type: string
+        color:
+          type: string
+      required:
+        - _id
+        - operator
+        - name
+        - hour
+        - description
+        - color
+    Logbook:
+      type: object
+      description: Describe a logbook object
+      properties:
+        _id:
+          type: object
+          $ref: "#/components/schemas/ObjectId"
+        creation_user:
+          type: string
+        creation_date:
+          type: string
+        date:
+          type: string
+        tasks:
+          type: array
+        notebook_tasks:
+          type: array
+      required:
+        - _id
+        - creation_user
+        - creation_date
+        - date
+        - tasks
+        - notebook_tasks
+    Minor:
+      type: object
+      description: Describe a minor object
+      properties:
+        _id:
+          type: object
+          $ref: "#/components/schemas/ObjectId"
+        name:
+          type: string
+        surname:
+          type: string
+      required:
+        - _id
+        - name
+        - surname
+    MinorAttendance:
+      type: object
+      description: Describe a minor attendance object
+      properties:
+        _id:
+          type: object
+          $ref: "#/components/schemas/ObjectId"
+        minorId:
+          type: object
+          $ref: "#/components/schemas/ObjectId"
+        name:
+          type: string
+        surname:
+          type: string
+        isPresent:
+          type: string
+        date:
+          type: object
+      required:
+        - _id
+        - minorId
+        - name
+        - surname
+        - isPresent
+        - date
+    Adult:
+      type: object
+      description: Describe an adult object
+      properties:
+        _id:
+          type: object
+          $ref: "#/components/schemas/ObjectId"
+        name:
+          type: string
+        surname:
+          type: string
+      required:
+        - _id
+        - name
+        - surname
+    AdultAttendance:
+      type: object
+      description: Describe an adult attendance object
+      properties:
+        _id:
+          type: object
+          $ref: "#/components/schemas/ObjectId"
+        adultId:
+          type: object
+          $ref: "#/components/schemas/ObjectId"
+        name:
+          type: string
+        surname:
+          type: string
+        isPresent:
+          type: string
+        date:
+          type: object
+      required:
+        - _id
+        - adultId
+        - name
+        - surname
+        - isPresent
+        - date
+    Settings:
+      type: object
+      description: Describe settings object
+      properties:
+        _id:
+          type: object
+          $ref: "#/components/schemas/ObjectId"
+        settings:
+          type: object
+        type:
+          type: string
+      required:
+        - _id
+        - settings
+        - type
+    Task:
+      type: object
+      description: Describe a task object
+      properties:
+        _id:
+          type: object
+          $ref: "#/components/schemas/ObjectId"
+        operator:
+          type: object
+          $ref: "#/components/schemas/ObjectId"
+        minor:
+          type: object
+          $ref: "#/components/schemas/ObjectId"
+        log:
+          type: object
+        description:
+          type: string
+        creation_date:
+          type: object
+        selected:
+          type: boolean
+        start:
+          type: string
+        status:
+          type: string
+        title:
+          type: string
+      required:
+        - _id
+        - operator
+        - minor
+        - log
+        - description
+        - creation_date
+        - selected
+        - start
+        - status
+        - title
+    NotebookTask:
+      type: object
+      description: Describe a notebook task object
+      properties:
+        _id:
+          type: object
+          $ref: "#/components/schemas/ObjectId"
+        operator:
+          type: string
+        shifts:
+          type: array
+          items:
+            type: string
+        description:
+          type: string
+        selected:
+          type: boolean
+        status:
+          type: string
+        title:
+          type: string
+      required:
+        - _id
+        - operator
+        - shifts
+        - description
+        - selected
+        - status
+        - title
+    Medication:
+      type: object
+      description: Describe a minor object
+      properties:
+        _id:
+          type: object
+          $ref: "#/components/schemas/ObjectId"
+        creation_user:
+          type: string
+        creation_date:
+          type: string
+        expiration_date:
+          type: string
+        last_modified:
+          type: string
+        lotto:
+          type: string
+        name:
+          type: string
+        amount:
+          type: integer
+      required:
+        - _id
+        - creation_user
+        - creation_date
+        - expiration_date
+        - last_modified
+        - lotto
+        - name
+        - amount
+    CallLog:
+      type: object
+      description: Describe a call log object
+      properties:
+        _id:
+          type: object
+          $ref: "#/components/schemas/ObjectId"
+        creation_user:
+          type: string
+        creation_date:
+          type: string
+        date:
+          type: string
+        minor:
+          type: string
+        phone_call_issuer:
+          type: string
+        notes:
+          type: string
+      required:
+        - _id
+        - creation_user
+        - creation_date
+        - date
+        - minor
+        - phone_call_issuer
+        - notes
+    ObjectId:
+      type: string
+      title: ObjectId
+      format: uuid
+      minLength: 24
+      maxLength: 24
+      pattern: "^[0-9a-f]+$"
+      description: MongoDB ObjectId
+    GenericObject:
+      type: object
+      title: GenericObject
+      properties: {}
+    Object:
+      type: object
+      properties:
+        creationDate:
+          type: string
+          format: date-time
+          readOnly: true
+        updateDate:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+        - creationDate
+    Project:
+      allOf:
+        - $ref: "#/components/schemas/Object"
+        - type: object
+          properties:
+            _id:
+              type: string
+            name:
+              type: string
+          required:
+            - name
+    Success:
+      type: object
+      title: Success
+      properties:
+        success:
+          type: boolean
+      required:
+        - success
+    Export:
+      type: object
+      title: Export
+      properties:
+        file:
+          type: string
+      required:
+        - file
+    Status:
+      type: object
+      title: Status
+      properties:
+        status:
+          type: boolean
+      required:
+        - status
+    Error:
+      type: object
+      title: Error
+      additionalProperties: false
+      properties:
+        description:
+          type: string
+          readOnly: true
+        error:
+          type: string
+          readOnly: true
+      required:
+        - description
+        - error
+      readOnly: true
+      description: The model of errors
+      x-examples:
+        not found:
+          description: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+          error: Not Found
+        forbidden:
+          description: You don't have the permission to access the requested resource. It is either read-protected or not readable by the server.
+          error: Forbidden
+    RoomPost:
+      title: RoomPost
+      x-stoplight:
+        id: pr2qlb7o7whka
+      type: object
+      properties:
+        name:
+          type: string
+        seats:
+          type: object
+          required:
+            - total
+          properties:
+            total:
+              type: integer
+              minimum: 1
+        guests:
+          type: array
+          items:
+            type: string
+      required:
+        - name
+        - seats
+    RoomPatch:
+      title: RoomPatch
+      x-stoplight:
+        id: pr2qlb7o7whka
+      type: object
+      properties:
+        name:
+          type: string
+        seats:
+          type: object
+          properties:
+            total:
+              type: integer
+              minimum: 1
+        guests:
+          type: array
+          items:
+            type: string
+    RoomGet:
+      title: RoomGet
+      x-stoplight:
+        id: pr2qlb7o7whka
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        seats:
+          type: object
+          properties:
+            total:
+              type: integer
+            occupied:
+              type: integer
+            available:
+              type: integer
+        guests:
+          type: array
+          items:
+            $ref: "#/components/schemas/Minor"
+    IncentiveCache:
+      type: object
+      required:
+        - id
+        - title
+        - status
+        - categories
+        - link
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the incentive
+        title:
+          type: string
+          description: Title of the incentive
+        status:
+          type: string
+          description: Status of the incentive
+        categories:
+          type: array
+          items:
+            type: string
+          description: List of categories
+        link:
+          type: string
+          description: Link to the incentive details
+        open_date:
+          type: string
+          format: date-time
+          nullable: true
+          description: Opening date for the incentive
+        close_date:
+          type: string
+          format: date-time
+          nullable: true
+          description: Closing date for the incentive
+        granted_costs:
+          type: array
+          items:
+            type: string
+          description: List of granted costs
+        activity_sector:
+          type: array
+          items:
+            type: string
+          description: List of activity sector codes
+        support_form:
+          type: array
+          items:
+            type: string
+          description: List of support form codes
+        scopes:
+          type: array
+          items:
+            type: string
+          description: List of scope codes
+        regions:
+          type: array
+          items:
+            type: string
+          description: List of region codes
+        full_data:
+          type: object
+          nullable: true
+          additionalProperties: true
+        last_updated:
+          type: string
+          format: date-time
+          description: Last update timestamp
+  responses:
+    SuccessResponse:
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Success"
+    ExportResponse:
+      description: Export
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Export"
+    UserResponse:
+      description: User
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/User"
+    GenericResponse:
+      description: Response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GenericObject"
+    StampingResponse:
+      description: Stamping Response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Status"
+    BadRequest:
+      description: Bad request
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotFound:
+      description: Not Found
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Error"
+security:
+  - BearerAuth: []
+  - CookieAuth: []
+tags:
+  - name: auth
+    description: API for authentification
+  - name: minors
+    description: API for minor object handle
+  - name: stamping
+    description: API for stamping operation
+  - name: tasks
+    description: API for task object handle
+  - name: export
+    description: API for operator object handle
+  - name: scrapper
+    description: API for scrapper operations

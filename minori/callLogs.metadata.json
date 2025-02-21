@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"c91e4e67422d4e6c9ab2305806510a3e","collectionName":"callLogs","type":"collection"}

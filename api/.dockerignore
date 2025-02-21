@@ -1,0 +1,14 @@
+**/__pycache__
+*.egg-info
+
+.gitignore
+.dockerignore
+.gitlab-ci.yml
+
+venv
+
+Dockerfile
+Dockerfile-dev
+Dockerfile.dev
+docker-compose.yml
+docker-compose.yaml

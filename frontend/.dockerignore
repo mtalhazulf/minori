@@ -1,0 +1,6 @@
+.dockerignroe
+.gitignore
+.gitlab
+.env.development
+
+node_modules
