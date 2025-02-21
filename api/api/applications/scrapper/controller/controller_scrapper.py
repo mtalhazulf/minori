@@ -1,6 +1,8 @@
 import logging
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional
+from threading import Thread, Lock
+import uuid
 
 from flask import jsonify, request
 from pymongo.errors import OperationFailure
@@ -14,6 +16,54 @@ from api.utils.session import get_current_user
 
 logger = logging.getLogger(__name__)
 CACHE_DURATION = timedelta(hours=168)
+
+
+class ScrapingJobManager:
+    def __init__(self):
+        self.jobs = {}
+        self.lock = Lock()
+
+    def create_job(self) -> str:
+        with self.lock:
+            job_id = str(uuid.uuid4())
+            self.jobs[job_id] = {
+                "status": "running",
+                "created_at": datetime.now(),
+                "updated_at": datetime.now(),
+                "error": None
+            }
+            return job_id
+
+    def get_running_job(self) -> Optional[tuple[str, dict]]:
+        with self.lock:
+            for job_id, job in self.jobs.items():
+                if job["status"] == "running":
+                    return job_id, job
+            return None
+
+    def update_job_status(self, job_id: str, status: str, error: str = None):
+        with self.lock:
+            if job_id in self.jobs:
+                self.jobs[job_id]["status"] = status
+                self.jobs[job_id]["updated_at"] = datetime.now()
+                if error:
+                    self.jobs[job_id]["error"] = error
+
+    def get_job(self, job_id: str) -> Optional[dict]:
+        with self.lock:
+            return self.jobs.get(job_id)
+
+    def cleanup_old_jobs(self, max_age_hours: int = 24):
+        with self.lock:
+            current_time = datetime.now()
+            to_delete = []
+            for job_id, job in self.jobs.items():
+                if (current_time - job["updated_at"]).total_seconds() > max_age_hours * 3600:
+                    to_delete.append(job_id)
+            for job_id in to_delete:
+                del self.jobs[job_id]
+
+job_manager = ScrapingJobManager()
 
 
 def get_cached_incentives() -> Optional[Dict]:
@@ -57,32 +107,62 @@ def update_cache(incentives: List[IncentiveCache]):
 
 def scrapper_incentives_get(force_refresh: bool = False):
     try:
+        job_manager.cleanup_old_jobs()
+
+        running_job = job_manager.get_running_job()
+        if running_job:
+            job_id, job = running_job
+            logger.info("A scraping job is already running")
+            cached_data = get_cached_incentives()
+            return jsonify({
+                "success": True,
+                "data": cached_data["data"] if cached_data else [],
+                "last_updated": cached_data["last_updated"] if cached_data else None,
+                "cached": True if cached_data else False,
+                "job_status": "running",
+                "job_id": job_id
+            })
+
         if not force_refresh:
             logger.info("Checking cache")
             cached_data = get_cached_incentives()
             if cached_data:
                 logger.info("Returning cached incentives data")
-                return jsonify(
-                    {
-                        "success": True,
-                        "data": cached_data["data"],
-                        "last_updated": cached_data["last_updated"],
-                        "cached": True,
-                    }
-                )
+                return jsonify({
+                    "success": True,
+                    "data": cached_data["data"],
+                    "last_updated": cached_data["last_updated"],
+                    "cached": True,
+                    "job_status": "none"
+                })
 
-        logger.info("Fetching fresh data" if force_refresh else "No valid cache found, scraping new data")
-        scraper = IncentivesScraper()
-        incentives, bonus_data = scraper.scrape_incentives()
+        job_id = job_manager.create_job()
 
-        update_cache(incentives)
-        return jsonify(
-            {
-                "success": True,
-                "data": [incentive.dict(exclude={"bonus_data"}) for incentive in incentives],
-                "cached": False,
-            }
-        )
+        def background_scrape():
+            try:
+                logger.info("Starting background scraping job")
+                scraper = IncentivesScraper()
+                incentives, bonus_data = scraper.scrape_incentives()
+                update_cache(incentives)
+
+                job_manager.update_job_status(job_id, "completed")
+                logger.info("Background scraping job completed successfully")
+            except Exception as e:
+                logger.error(f"Background scraping job failed: {str(e)}", exc_info=True)
+                job_manager.update_job_status(job_id, "failed", str(e))
+
+        thread = Thread(target=background_scrape)
+        thread.daemon = True
+        thread.start()
+
+        cached_data = get_cached_incentives()
+        return jsonify({
+            "success": True,
+            "data": cached_data["data"] if cached_data else [],
+            "cached": True,
+            "job_status": "running",
+            "job_id": job_id
+        })
 
     except ValueError as e:
         logger.error(f"Invalid region provided: {str(e)}")
@@ -145,7 +225,6 @@ def scrapper_incentive_update(incentive_id: str):
         if result.matched_count == 0:
             return jsonify({"success": False, "error": "Incentive not found or unauthorized"}), 404
 
-        # Convert user object to dict for JSON serialization
         user_dict = {"id": current_user.id, "username": current_user.username, "subscriber": current_user.subscriber}
 
         return jsonify({"success": True, "message": "Incentive updated successfully", "user": user_dict})
@@ -199,7 +278,6 @@ def scrapper_incentive_create_v2():
         incentive_dict = incentive.dict()
         mongo.db[IncentiveCache.Config.collection].insert_one(incentive_dict)
 
-        # Convert user object to dict for JSON serialization
         user_dict = {"id": current_user.id, "username": current_user.username, "subscriber": current_user.subscriber}
 
         return jsonify(
@@ -331,3 +409,33 @@ def scrapper_analyze_text():
     except Exception as e:
         logger.error(f"Error analyzing text: {str(e)}", exc_info=True)
         return jsonify({"success": False, "error": f"Failed to analyze text: {str(e)}"}), 500
+
+
+def scrapper_job_status_get(job_id: str):
+    try:
+        job = job_manager.get_job(job_id)
+
+        if not job:
+            return jsonify({
+                "success": False,
+                "error": "Job not found"
+            }), 404
+
+        cached_data = get_cached_incentives() if job["status"] == "completed" else None
+
+        return jsonify({
+            "success": True,
+            "status": job["status"],
+            "created_at": job["created_at"],
+            "updated_at": job["updated_at"],
+            "error": job.get("error"),
+            "data": cached_data["data"] if cached_data else None,
+            "last_updated": cached_data["last_updated"] if cached_data else None
+        })
+
+    except Exception as e:
+        logger.error(f"Error getting job status: {str(e)}", exc_info=True)
+        return jsonify({
+            "success": False,
+            "error": f"Failed to get job status: {str(e)}"
+        }), 500
