@@ -179,8 +179,7 @@
                 )
               " />
             <q-btn-dropdown
-              flat
-              round
+              class="q-ml-sm"
               color="primary"
               icon="history"
               size="sm"

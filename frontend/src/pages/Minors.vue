@@ -228,6 +228,7 @@
               size="sm"
               class="q-ml-lg"
               :title="'Genera PDF Valutazione AI'"
+              :disable="!props.row.info_sheet?.semestral_comunication.date"
               @click="viewAIReport(props.row)" />
             <q-btn
               round

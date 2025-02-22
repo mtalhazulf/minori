@@ -1940,24 +1940,34 @@ def archive_minor_information_sheet(db=None, info_children=None, info=None):
 
 
 def generate_ai_report_pdf(info=None):
-    pdf = PDF()
+    if info is None:
+        return None
+
+    pdf = FPDF()
     pdf.add_page()
+
     fonts = [
         ("DejaVu", "", FONT_DEJAVU_SANS_CONDENSED),
         ("DejaVu", "B", FONT_DEJAVU_SANS_CONDENSED_BOLD),
         ("DejaVu", "I", FONT_DEJAVU_SANS_CONDENSED_OBLIQUE),
         ("DejaVu", "BI", FONT_DEJAVU_SANS_CONDENSED_BOLD_OBLIQUE),
     ]
+
     for font in fonts:
         pdf.add_font(font[0], font[1], font[2], uni=True)
     pdf.set_font("DejaVu", size=11)
     pdf.set_margins(13, 5)
     pdf.set_auto_page_break(True, margin=15)
 
-    pdf.cell(0, 10, f"Rapporto Operatore: {info['operator']['name']} {info['operator']['surname']}", 0, 1, "C")
-    pdf.cell(0, 10, f"Periodo: {info['start_date']} - {info['end_date']}", 0, 1, "C")
+    # Use the minor's name and date from the available data
+    minor_name = f"{info['minor']['name']} {info['minor']['surname']}"
+    report_date = info['semestral_comunication'].get('date', '')
+    
+    pdf.cell(0, 10, f"Report AI - {minor_name}", 0, 1, "C")
+    if report_date:
+        pdf.cell(0, 10, f"Data: {report_date}", 0, 1, "C")
     pdf.ln(10)
 
-    pdf.multi_cell(0, 5, info["ai_report"])
+    pdf.multi_cell(0, 5, info["semestral_comunication"]["ai_report"])
 
     return base64.b64encode(pdf.output(dest="S")).decode()

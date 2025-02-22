@@ -167,10 +167,25 @@ def exports_export_minor_arg_get(arg):
 def exports_export_minor_ai_get(minor_id):
     db = get_mongo().cx.get_default_database()
     data_dict = db["children"].find_one({"_id": ObjectId(minor_id)}, {"_id": 1, "info_sheet": 1})
-    if "info_sheet" in data_dict:
-        return {"file": generate_ai_report_pdf(data_dict["info_sheet"])}
-    else:
-        return {"file": generate_ai_report_pdf(None)}
+    
+    if not data_dict or "info_sheet" not in data_dict:
+        return jsonify({
+            "success": False,
+            "message": "Nessuna scheda informativa trovata per questo minore"
+        })
+    
+    print (data_dict["info_sheet"])
+    pdf_data = generate_ai_report_pdf(data_dict["info_sheet"])
+    if pdf_data is None:
+        return jsonify({
+            "success": False,
+            "message": "Impossibile generare il report PDF"
+        })
+        
+    return jsonify({
+        "success": True,
+        "file": pdf_data
+    })
 
 
 def exports_archive_minor_get():
