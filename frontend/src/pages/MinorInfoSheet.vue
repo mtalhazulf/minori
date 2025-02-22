@@ -1310,11 +1310,25 @@ export default {
         })
         .then(response => {
           this.isSummaryLoading = false
+          if (!response.data.success) {
+            this.$q.notify({
+              type: 'negative',
+              message: response.data.message,
+              position: 'top'
+            })
+            return
+          }
           this.minor_info_sheet.semestral_comunication.ai_report =
             response.data.summary
           this.$forceUpdate()
         })
         .catch(error => {
+          this.isSummaryLoading = false
+          this.$q.notify({
+            type: 'negative',
+            message: 'Errore durante la generazione del riepilogo',
+            position: 'top'
+          })
           console.error('Error Generating Summary:', error)
         })
     },

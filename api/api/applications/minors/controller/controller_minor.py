@@ -230,6 +230,9 @@ def minors_minor_generate_summary_post(body):
     body["start_date"]
     body["end_date"]
     db = get_mongo().cx.get_default_database()
+
     logs = fetch_tasks_between_date_range(db, body)
+    if len(logs) == 0:
+        return jsonify({"success": False, "message": "Nessun log trovato"})
     summary = summarize_info_sheet(logs)
     return jsonify({"success": True, "summary": summary})

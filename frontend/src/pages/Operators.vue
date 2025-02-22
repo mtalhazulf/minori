@@ -560,6 +560,10 @@ export default {
       api
         .get(route)
         .then(response => {
+          if (response.data.success === false) {
+            this.showNotif('negative', response.data.message)
+            return
+          }
           const newReport = {
             id: Date.now(),
             date: moment().format('YYYY-MM-DD')

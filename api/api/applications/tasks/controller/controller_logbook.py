@@ -66,6 +66,14 @@ def tasks_operator_report_get(operator_id, start_date, end_date):
     }
     logbook_entries = list(db["logbook"].find(logbook_query))
 
+    # print("\n\n\n######@@@@@@@@@########")
+    # print(logbook_entries)
+    # print("\n\n\n ######@@@@@@@@@######## \n\n\n ")
+    if len(logbook_entries) == 0:
+        return jsonify_mongo({
+            "success": False,
+            "message": "Nessuna voce del registro trovata per l'intervallo di date e l'operatore selezionati."
+        })
     for task in tasks:
         task["creation_date"] = task["creation_date"].strftime("%Y-%m-%d %H:%M:%S")
         if "log" in task:
@@ -111,6 +119,12 @@ def tasks_operator_report_get(operator_id, start_date, end_date):
 
     # Call OpenAI API
     ai_report = generate_report(tasks_details)
+
+
+    print("\n\n\n######@@@@@@@@@########")
+    print(ai_report)
+    print("\n\n\n ######@@@@@@@@@######## \n\n\n ")
+
 
     # Generate PDF
     pdf_content = generate_ai_report_pdf(
