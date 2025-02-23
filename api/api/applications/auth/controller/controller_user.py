@@ -223,7 +223,6 @@ def auth_user_operators_get():
 
         return jsonify_mongo(users)
     except Exception as e:
-        print(f"An error occurred: {e}")
         return jsonify({"error": str(e)}), 500
 
 

@@ -65,10 +65,6 @@ def tasks_operator_report_get(operator_id, start_date, end_date):
         "$or": [{"tasks.operator": ObjectId(operator_id)}, {"notebook_tasks.operator": ObjectId(operator_id)}],
     }
     logbook_entries = list(db["logbook"].find(logbook_query))
-
-    # print("\n\n\n######@@@@@@@@@########")
-    # print(logbook_entries)
-    # print("\n\n\n ######@@@@@@@@@######## \n\n\n ")
     if len(logbook_entries) == 0:
         return jsonify_mongo({
             "success": False,
@@ -116,22 +112,10 @@ def tasks_operator_report_get(operator_id, start_date, end_date):
         "total_tasks": len(tasks),
         "total_logbook_entries": len(logbook_entries),
     }
-
-    # Call OpenAI API
     ai_report = generate_report(tasks_details)
-
-
-    print("\n\n\n######@@@@@@@@@########")
-    print(ai_report)
-    print("\n\n\n ######@@@@@@@@@######## \n\n\n ")
-
-
-    # Generate PDF
     pdf_content = generate_ai_report_pdf(
         {"operator": operator, "start_date": start_date, "end_date": end_date, "ai_report": ai_report}
     )
-
-    # Store in MongoDB
     report_document = {
         "operator_id": ObjectId(operator_id),
         "name": f"{operator['name']} {operator['surname']}",

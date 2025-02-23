@@ -1959,15 +1959,24 @@ def generate_ai_report_pdf(info=None):
     pdf.set_margins(13, 5)
     pdf.set_auto_page_break(True, margin=15)
 
-    # Use the minor's name and date from the available data
-    minor_name = f"{info['minor']['name']} {info['minor']['surname']}"
-    report_date = info['semestral_comunication'].get('date', '')
+    is_operator_report = 'operator' in info
     
-    pdf.cell(0, 10, f"Report AI - {minor_name}", 0, 1, "C")
-    if report_date:
-        pdf.cell(0, 10, f"Data: {report_date}", 0, 1, "C")
-    pdf.ln(10)
-
-    pdf.multi_cell(0, 5, info["semestral_comunication"]["ai_report"])
-
+    if is_operator_report:
+        name = f"{info['operator']['name']} {info['operator']['surname']}"
+        pdf.cell(0, 10, f"Operator Report - {name}", 0, 1, "C")
+        pdf.cell(0, 10, f"Period: {info['start_date']} to {info['end_date']}", 0, 1, "C")
+        pdf.ln(10)
+        pdf.multi_cell(0, 5, info["ai_report"])
+    else:
+        name = f"{info['minor']['name']} {info['minor']['surname']}"
+        report_date = info.get('semestral_comunication', {}).get('date', '')
+        
+        pdf.cell(0, 10, f"Report AI - {name}", 0, 1, "C")
+        if report_date:
+            pdf.cell(0, 10, f"Data: {report_date}", 0, 1, "C")
+        pdf.ln(10)
+        
+        ai_report = info.get('semestral_comunication', {}).get('ai_report', '')
+        pdf.multi_cell(0, 5, ai_report)
+    
     return base64.b64encode(pdf.output(dest="S")).decode()
