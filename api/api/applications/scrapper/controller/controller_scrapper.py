@@ -362,41 +362,14 @@ def scrapper_analyze_text():
                 {
                     "role": "system",
                     "content": """
-
-                    Analizza il bando e sviluppa un piano aziendale dettagliato. Utilizza questa struttura precisa:
-
-                                1. SOMMARIO ESECUTIVO
-                                - Sintesi del progetto
-                                - Obiettivi principali
-                                - Vantaggio competitivo
-
-                                2. INFORMAZIONI SULL'IMPRESA
-                                - Dati aziendali
-                                - Struttura organizzativa
-                                - Competenze chiave
-
-                                3. STRATEGIA E MERCATO
-                                - Piano operativo dettagliato
-                                - Target di riferimento
-                                - Analisi della concorrenza
-                                - Opportunità di mercato
-                                - Strategie di marketing
-
-                                4. ASPETTI ECONOMICI
-                                - Investimenti necessari
-                                - Dettaglio dei costi
-                                - Previsioni di fatturato
-                                - ROI atteso
-                                - Piano di sostenibilità
-
-                                5. CONFORMITÀ E INNOVAZIONE
-                                - Requisiti del bando soddisfatti
-                                - Elementi innovativi
-                                - Impatto ambientale/sociale
-                                - Rischi e mitigazioni
-
-                                Genera una risposta dettagliata in Markdown . but dont add ```markdown``` tags.
-                                IMPORTANTE: Lascia VUOTI i campi del capitolo 2 (Informazioni sull'Impresa).""",
+                    Crea un progetto innovativo per questo bando (fornito dall'utente) , dopodichè descrivi il 
+                    business plan il piu preciso possibile su questo bando lasciando vuoti i campi del capitolo 2 relativo à
+                    Settore: 
+                    Tipo di Impresa: 
+                    Localizzazione: 
+                    Anni di attività: 
+                    Mission:
+                    """,
                 },
                 {"role": "user", "content": text},
             ],

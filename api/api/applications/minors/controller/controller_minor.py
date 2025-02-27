@@ -8,6 +8,7 @@ from api.applications.minors.helper.attendance import check_attendance
 from api.applications.minors.helper.minor import (
     edit_minor,
     fetch_tasks_between_date_range,
+    fetch_call_logs_between_date_range,
     remove_empty_attributes,
     update_minor,
 )
@@ -227,12 +228,18 @@ def minors_minor_arg_post(arg, body):
 
 def minors_minor_generate_summary_post(body):
     body["info_sheet"] = remove_empty_attributes(body["info_sheet"])
-    body["start_date"]
-    body["end_date"]
+    if "start_date" not in body or "end_date" not in body or "id" not in body:
+        raise BadRequest("Campi obbligatori mancanti: start_date, end_date, id")
+    
     db = get_mongo().cx.get_default_database()
 
-    logs = fetch_tasks_between_date_range(db, body)
-    if len(logs) == 0:
+    task_logs = fetch_tasks_between_date_range(db, body)    
+    call_logs = fetch_call_logs_between_date_range(db, body)
+
+    all_logs = task_logs + call_logs
+    
+    if len(all_logs) == 0:
         return jsonify({"success": False, "message": "Nessun log trovato"})
-    summary = summarize_info_sheet(logs)
+    
+    summary = summarize_info_sheet(all_logs)
     return jsonify({"success": True, "summary": summary})

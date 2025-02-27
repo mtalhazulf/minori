@@ -95,13 +95,15 @@ def remove_empty_attributes(obj):
 
 
 def fetch_tasks_between_date_range(db, data):
-    start_date = data["start_date"]
-    end_date = data["end_date"]
-    data["start_date"] = datetime.strptime(data["start_date"], "%Y-%m-%d")
-    data["end_date"] = datetime.strptime(data["end_date"], "%Y-%m-%d")
-
-    start_date = datetime.combine(data["start_date"].date(), datetime.min.time())
-    end_date = datetime.combine(data["end_date"].date(), datetime.min.time())
+    data_copy = data.copy()    
+    if isinstance(data_copy["start_date"], str):
+        data_copy["start_date"] = datetime.strptime(data_copy["start_date"], "%Y-%m-%d")
+    
+    if isinstance(data_copy["end_date"], str):
+        data_copy["end_date"] = datetime.strptime(data_copy["end_date"], "%Y-%m-%d")
+    
+    start_date = datetime.combine(data_copy["start_date"].date(), datetime.min.time())
+    end_date = datetime.combine(data_copy["end_date"].date(), datetime.max.time())
 
     filter_query = {"start": {"$gte": start_date, "$lte": end_date}, "status": "done", "minor": ObjectId(data["id"])}
 
@@ -124,3 +126,43 @@ def fetch_tasks_between_date_range(db, data):
             event["operator"] = operator if operator else "User"
 
     return events
+
+
+def fetch_call_logs_between_date_range(db, data):
+    data_copy = data.copy()
+    
+    if isinstance(data_copy["start_date"], str):
+        data_copy["start_date"] = datetime.strptime(data_copy["start_date"], "%Y-%m-%d")
+    
+    if isinstance(data_copy["end_date"], str):
+        data_copy["end_date"] = datetime.strptime(data_copy["end_date"], "%Y-%m-%d")
+    
+    start_date = datetime.combine(data_copy["start_date"].date(), datetime.min.time())
+    end_date = datetime.combine(data_copy["end_date"].date(), datetime.max.time())
+
+    filter_query = {
+        "date": {"$gte": start_date, "$lte": end_date},
+        "minors": {"$in": [ObjectId(data["id"])]}
+    }
+
+    call_logs = list(db["callLogs"].find(filter_query))
+
+    for log in call_logs:
+        if "date" in log:
+            log["date"] = log["date"].strftime("%Y-%m-%d %H:%M:%S")
+        if "creation_date" in log:
+            log["creation_date"] = log["creation_date"].strftime("%Y-%m-%d %H:%M:%S")
+        if "last_modified" in log:
+            log["last_modified"] = log["last_modified"].strftime("%Y-%m-%d %H:%M:%S")
+        if "creation_user" in log:
+            user = get_user(db, log["creation_user"])
+            log["creation_user"] = user if user else "User"
+        
+        if "minors" in log and isinstance(log["minors"], list):
+            minor_ids = []
+            for minor_id in log["minors"]:
+                minor = get_minor(db, minor_id)
+                minor_ids.append(minor if minor else "Minore")
+            log["minors"] = minor_ids
+
+    return call_logs
