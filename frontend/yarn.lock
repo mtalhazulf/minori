@@ -2955,6 +2955,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"asynckit@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "asynckit@npm:0.4.0"
+  checksum: 7b78c451df768adba04e2d02e63e2d0bf3b07adcd6e42b4cf665cb7ce899bedd344c69a1dcbce355b5f972d597b25aaa1c1742b52cffd9caccb22f348114f6be
+  languageName: node
+  linkType: hard
+
 "at-least-node@npm:^1.0.0":
   version: 1.0.0
   resolution: "at-least-node@npm:1.0.0"
@@ -2980,12 +2987,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^0.25.0":
-  version: 0.25.0
-  resolution: "axios@npm:0.25.0"
+"axios@npm:^0.28.0":
+  version: 0.28.1
+  resolution: "axios@npm:0.28.1"
   dependencies:
-    follow-redirects: ^1.14.7
-  checksum: 2a8a3787c05f2a0c9c3878f49782357e2a9f38945b93018fb0c4fd788171c43dceefbb577988628e09fea53952744d1ecebde234b561f1e703aa43e0a598a3ad
+    follow-redirects: ^1.15.0
+    form-data: ^4.0.0
+    proxy-from-env: ^1.1.0
+  checksum: 5115a38d79064d07437c5a28f15841e3607634040e3120ec06a2c4367a7d07cf213b16496eab53b6f58ebc5fb377a440ba9ed4782529b14449a1e285734bfb54
   languageName: node
   linkType: hard
 
@@ -3480,6 +3489,15 @@ __metadata:
   version: 0.5.2
   resolution: "colorjs.io@npm:0.5.2"
   checksum: f4ad8a0ead4e7eb74612a5fed9ae999201116b215b2eac70660c1f643e21980922741641209bdbd010723923762e8e80bd499250acf7505605309f01b76f53fa
+  languageName: node
+  linkType: hard
+
+"combined-stream@npm:^1.0.8":
+  version: 1.0.8
+  resolution: "combined-stream@npm:1.0.8"
+  dependencies:
+    delayed-stream: ~1.0.0
+  checksum: 49fa4aeb4916567e33ea81d088f6584749fc90c7abec76fd516bf1c5aa5c79f3584b5ba3de6b86d26ddd64bae5329c4c7479343250cfe71c75bb366eae53bb7c
   languageName: node
   linkType: hard
 
@@ -4007,6 +4025,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"delayed-stream@npm:~1.0.0":
+  version: 1.0.0
+  resolution: "delayed-stream@npm:1.0.0"
+  checksum: 46fe6e83e2cb1d85ba50bd52803c68be9bd953282fa7096f51fc29edd5d67ff84ff753c51966061e5ba7cb5e47ef6d36a91924eddb7f3f3483b1c560f77a0020
+  languageName: node
+  linkType: hard
+
 "depd@npm:2.0.0":
   version: 2.0.0
   resolution: "depd@npm:2.0.0"
@@ -4364,6 +4389,18 @@ __metadata:
   dependencies:
     es-errors: ^1.3.0
   checksum: 214d3767287b12f36d3d7267ef342bbbe1e89f899cfd67040309fc65032372a8e60201410a99a1645f2f90c1912c8c49c8668066f6bdd954bcd614dda2e3da97
+  languageName: node
+  linkType: hard
+
+"es-set-tostringtag@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "es-set-tostringtag@npm:2.1.0"
+  dependencies:
+    es-errors: ^1.3.0
+    get-intrinsic: ^1.2.6
+    has-tostringtag: ^1.0.2
+    hasown: ^2.0.2
+  checksum: 789f35de4be3dc8d11fdcb91bc26af4ae3e6d602caa93299a8c45cf05d36cc5081454ae2a6d3afa09cceca214b76c046e4f8151e092e6fc7feeb5efb9e794fc6
   languageName: node
   linkType: hard
 
@@ -4894,7 +4931,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.14.7":
+"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.15.0":
   version: 1.15.9
   resolution: "follow-redirects@npm:1.15.9"
   peerDependenciesMeta:
@@ -4942,6 +4979,18 @@ __metadata:
     vue-template-compiler:
       optional: true
   checksum: 95d145ab7936445f3a9bfa4116ef73537f97196cfaa3f5b24473dff36d034e839d3b0e034a23beefc9619eceb7a9866816bfd55afd1968e955eb3b3f8cfc35ed
+  languageName: node
+  linkType: hard
+
+"form-data@npm:^4.0.0":
+  version: 4.0.2
+  resolution: "form-data@npm:4.0.2"
+  dependencies:
+    asynckit: ^0.4.0
+    combined-stream: ^1.0.8
+    es-set-tostringtag: ^2.1.0
+    mime-types: ^2.1.12
+  checksum: e887298b22c13c7c9c5a8ba3716f295a479a13ca78bfd855ef11cbce1bcf22bc0ae2062e94808e21d46e5c667664a1a1a8a7f57d7040193c1fefbfb11af58aab
   languageName: node
   linkType: hard
 
@@ -5257,10 +5306,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"has-symbols@npm:^1.1.0":
+"has-symbols@npm:^1.0.3, has-symbols@npm:^1.1.0":
   version: 1.1.0
   resolution: "has-symbols@npm:1.1.0"
   checksum: b2316c7302a0e8ba3aaba215f834e96c22c86f192e7310bdf689dd0e6999510c89b00fbc5742571507cebf25764d68c988b3a0da217369a73596191ac0ce694b
+  languageName: node
+  linkType: hard
+
+"has-tostringtag@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "has-tostringtag@npm:1.0.2"
+  dependencies:
+    has-symbols: ^1.0.3
+  checksum: 999d60bb753ad714356b2c6c87b7fb74f32463b8426e159397da4bde5bca7e598ab1073f4d8d4deafac297f2eb311484cd177af242776bf05f0d11565680468d
   languageName: node
   linkType: hard
 
@@ -6360,7 +6418,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mime-types@npm:^2.1.27, mime-types@npm:^2.1.31, mime-types@npm:~2.1.17, mime-types@npm:~2.1.24, mime-types@npm:~2.1.34":
+"mime-types@npm:^2.1.12, mime-types@npm:^2.1.27, mime-types@npm:^2.1.31, mime-types@npm:~2.1.17, mime-types@npm:~2.1.24, mime-types@npm:~2.1.34":
   version: 2.1.35
   resolution: "mime-types@npm:2.1.35"
   dependencies:
@@ -6551,7 +6609,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^5.54.1
     "@typescript-eslint/parser": ^5.54.1
     "@vue/eslint-config-typescript": ^11.0.2
-    axios: ^0.25.0
+    axios: ^0.28.0
     core-js: ^3.6.5
     dotenv: ^16.0.0
     env-cmd: ^10.1.0
@@ -7680,6 +7738,13 @@ __metadata:
     forwarded: 0.2.0
     ipaddr.js: 1.9.1
   checksum: 29c6990ce9364648255454842f06f8c46fcd124d3e6d7c5066df44662de63cdc0bad032e9bf5a3d653ff72141cc7b6019873d685708ac8210c30458ad99f2b74
+  languageName: node
+  linkType: hard
+
+"proxy-from-env@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "proxy-from-env@npm:1.1.0"
+  checksum: ed7fcc2ba0a33404958e34d95d18638249a68c430e30fcb6c478497d72739ba64ce9810a24f53a7d921d0c065e5b78e3822759800698167256b04659366ca4d4
   languageName: node
   linkType: hard
 

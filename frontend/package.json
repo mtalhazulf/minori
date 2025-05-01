@@ -21,7 +21,7 @@
     "@fullcalendar/vue3": "^5.10.1",
     "@quasar/extras": "^1.0.0",
     "@quasar/quasar-ui-qcalendar": "^4.0.0",
-    "axios": "^0.25.0",
+    "axios": "^0.28.0",
     "core-js": "^3.6.5",
     "dotenv": "^16.0.0",
     "idle-js": "^1.2.0",
